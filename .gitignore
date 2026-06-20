@@ -1,0 +1,9 @@
+node_modules/
+
+# Opt-in full Iconify bundle (~418 MB, 200k+ icons) — never committed.
+# Pull on demand with: npm run fetch:full
+data/_full-iconify/
+
+# OS / editor cruft
+.DS_Store
+*.log

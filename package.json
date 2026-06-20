@@ -1,0 +1,19 @@
+{
+  "name": "ericks-design-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "All-encompassing design compendium for web apps & IoT — offline icon data (12 sets via Iconify JSON) + a Claude skill and CLI to render any icon as SVG / React / Vue / Svelte / Iconify name.",
+  "scripts": {
+    "fetch": "node scripts/fetch-icons.mjs",
+    "icon": "node scripts/icon.mjs",
+    "gallery": "node scripts/build-gallery.mjs",
+    "fetch:full": "node scripts/fetch-full-iconify.mjs",
+    "build": "npm run fetch && npm run gallery"
+  },
+  "dependencies": {
+    "@iconify/utils": "^2.1.33",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0"
+  }
+}

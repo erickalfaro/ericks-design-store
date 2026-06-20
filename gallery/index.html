@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Erick's Design Store — Icon Gallery</title><style>
+:root{color-scheme:light dark;--bg:#0d1117;--card:#161b22;--fg:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--border:#30363d}
+@media (prefers-color-scheme:light){:root{--bg:#fff;--card:#f6f8fa;--fg:#1f2328;--muted:#656d76;--accent:#0969da;--border:#d0d7de}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--fg)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+header{padding:24px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5}
+h1{margin:0 0 4px;font-size:20px}.sub{color:var(--muted);font-size:13px}
+.wrap{padding:20px 28px;max-width:1400px;margin:0 auto}
+input[type=search]{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--fg);font-size:15px;margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{display:block;padding:16px;border:1px solid var(--border);border-radius:10px;background:var(--card)}
+.card:hover{border-color:var(--accent)}.card h3{margin:0 0 6px;font-size:16px}.card .meta{color:var(--muted);font-size:13px}
+.badge{display:inline-block;font-size:11px;padding:2px 7px;border:1px solid var(--border);border-radius:20px;color:var(--muted);margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.tile{content-visibility:auto;contain-intrinsic-size:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 6px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;text-align:center}
+.tile:hover{border-color:var(--accent)}
+.tile svg{width:28px;height:28px;color:var(--fg)}
+.tile .nm{font-size:10px;color:var(--muted);word-break:break-word;line-height:1.2}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.count{color:var(--muted);font-size:13px;margin:0 0 12px}
+</style></head>
+<body><header><h1>Erick's Design Store</h1>
+<div class="sub">11 static sets · 44,000 icons offline · click a set to browse. Grab any icon: <code>node scripts/icon.mjs &lt;prefix&gt;:&lt;name&gt;</code></div></header>
+<div class="wrap"><div class="cards"><a class="card" href="lucide.html"><h3>Lucide</h3>
+<div class="meta">1,803 icons · <code>lucide:</code></div>
+<div class="meta" style="margin-top:6px">Clean, consistent open-stroke line icons (a Feather fork). The shadcn/ui default. Best all-round pick for modern web apps.</div><span class="badge">ISC</span></a><a class="card" href="ph.html"><h3>Phosphor</h3>
+<div class="meta">9,161 icons · <code>ph:</code></div>
+<div class="meta" style="margin-top:6px">Flexible family with six weights: thin, light, regular, bold, fill, duotone. Friendly, rounded geometry.</div><span class="badge">MIT</span></a><a class="card" href="tabler.html"><h3>Tabler Icons</h3>
+<div class="meta">6,194 icons · <code>tabler:</code></div>
+<div class="meta" style="margin-top:6px">Huge 2px-stroke line set on a 24px grid. Largest of the line families here. Very consistent.</div><span class="badge">MIT</span></a><a class="card" href="heroicons.html"><h3>Heroicons</h3>
+<div class="meta">1,288 icons · <code>heroicons:</code></div>
+<div class="meta" style="margin-top:6px">Small, polished, curated set by the Tailwind team. Outline (24px), Solid (24px), Mini (20px), Micro (16px).</div><span class="badge">MIT</span></a><a class="card" href="radix-icons.html"><h3>Radix Icons</h3>
+<div class="meta">342 icons · <code>radix-icons:</code></div>
+<div class="meta" style="margin-top:6px">Crisp 15×15 UI glyphs designed for dense interface chrome (menus, toolbars, controls).</div><span class="badge">MIT</span></a><a class="card" href="feather.html"><h3>Feather</h3>
+<div class="meta">286 icons · <code>feather:</code></div>
+<div class="meta" style="margin-top:6px">The original minimalist 24px line set that Lucide forked from. Small and stable.</div><span class="badge">MIT</span></a><a class="card" href="material-symbols.html"><h3>Material Symbols</h3>
+<div class="meta">16,322 icons · <code>material-symbols:</code></div>
+<div class="meta" style="margin-top:6px">Google&#39;s official system icons (successor to Material Icons). Outlined / Rounded / Sharp; fill, weight, grade, optical-size axes.</div><span class="badge">Apache-2.0</span></a><a class="card" href="ri.html"><h3>Remix Icon</h3>
+<div class="meta">3,229 icons · <code>ri:</code></div>
+<div class="meta" style="margin-top:6px">Neutral system icons on a 24px grid, each available in Line and Fill variants. Strong brand/logo coverage.</div><span class="badge">Apache-2.0</span></a><a class="card" href="bi.html"><h3>Bootstrap Icons</h3>
+<div class="meta">2,084 icons · <code>bi:</code></div>
+<div class="meta" style="margin-top:6px">Official Bootstrap set. Mostly solid/filled forms on a 16px grid; many have outline+fill pairs.</div><span class="badge">MIT</span></a><a class="card" href="iconoir.html"><h3>Iconoir</h3>
+<div class="meta">1,682 icons · <code>iconoir:</code></div>
+<div class="meta" style="margin-top:6px">Large hand-crafted 1.5px-stroke line set with a slightly softer, editorial feel than Lucide/Tabler.</div><span class="badge">MIT</span></a><a class="card" href="bx.html"><h3>Boxicons</h3>
+<div class="meta">1,609 icons · <code>bx:</code></div>
+<div class="meta" style="margin-top:6px">Broad set in three families: Regular (line, bx-), Solid (filled, bxs-) and Logos (brands, bxl-).</div><span class="badge">MIT</span></a><a class="card" href="../docs/lucide-animated.md"><h3>Lucide Animated</h3>
+<div class="meta">350+ animated React icons</div>
+<div class="meta" style="margin-top:6px">Motion-based animated components (not static SVG) — see the doc.</div><span class="badge">MIT</span></a></div></div></body></html>

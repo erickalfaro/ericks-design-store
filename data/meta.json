@@ -1,0 +1,205 @@
+{
+  "generatedBy": "scripts/fetch-icons.mjs",
+  "totalSets": 11,
+  "totalIcons": 44000,
+  "sets": [
+    {
+      "prefix": "lucide",
+      "name": "Lucide",
+      "license": "ISC",
+      "home": "https://lucide.dev",
+      "docs": "https://lucide.dev/icons",
+      "npm": "lucide / lucide-react / lucide-vue-next / lucide-svelte",
+      "defaults": {
+        "size": 24,
+        "stroke": 2
+      },
+      "style": "Clean, consistent open-stroke line icons (a Feather fork). The shadcn/ui default. Best all-round pick for modern web apps.",
+      "whenToUse": "Default choice for clean line UIs, dashboards, SaaS, shadcn-based projects. Adjustable stroke width.",
+      "iconCount": 1803,
+      "aliasCount": 216,
+      "version": null,
+      "file": "data/lucide.json"
+    },
+    {
+      "prefix": "ph",
+      "name": "Phosphor",
+      "license": "MIT",
+      "home": "https://phosphoricons.com",
+      "docs": "https://phosphoricons.com",
+      "npm": "@phosphor-icons/react / @phosphor-icons/vue / @phosphor-icons/web",
+      "defaults": {
+        "size": 256,
+        "stroke": null
+      },
+      "style": "Flexible family with six weights: thin, light, regular, bold, fill, duotone. Friendly, rounded geometry.",
+      "whenToUse": "When you want one icon vocabulary but need to vary visual weight/tone (e.g. thin for elegant, bold for emphasis, duotone for accents).",
+      "iconCount": 9161,
+      "aliasCount": 37,
+      "version": null,
+      "file": "data/ph.json"
+    },
+    {
+      "prefix": "tabler",
+      "name": "Tabler Icons",
+      "license": "MIT",
+      "home": "https://tabler.io/icons",
+      "docs": "https://tabler.io/icons",
+      "npm": "@tabler/icons / @tabler/icons-react / @tabler/icons-vue",
+      "defaults": {
+        "size": 24,
+        "stroke": 2
+      },
+      "style": "Huge 2px-stroke line set on a 24px grid. Largest of the line families here. Very consistent.",
+      "whenToUse": "When you need breadth (5,900+ icons) in a clean line style and Lucide is missing a glyph. Matches Lucide visually.",
+      "iconCount": 6194,
+      "aliasCount": 184,
+      "version": null,
+      "file": "data/tabler.json"
+    },
+    {
+      "prefix": "heroicons",
+      "name": "Heroicons",
+      "license": "MIT",
+      "home": "https://heroicons.com",
+      "docs": "https://heroicons.com",
+      "npm": "@heroicons/react / @heroicons/vue",
+      "defaults": {
+        "size": 24,
+        "stroke": null
+      },
+      "style": "Small, polished, curated set by the Tailwind team. Outline (24px), Solid (24px), Mini (20px), Micro (16px).",
+      "whenToUse": "Tailwind / Tailwind UI projects, or when you want a tight, opinionated, beautifully balanced set over sheer count.",
+      "iconCount": 1288,
+      "aliasCount": 9,
+      "version": null,
+      "file": "data/heroicons.json"
+    },
+    {
+      "prefix": "radix-icons",
+      "name": "Radix Icons",
+      "license": "MIT",
+      "home": "https://www.radix-ui.com/icons",
+      "docs": "https://www.radix-ui.com/icons",
+      "npm": "@radix-ui/react-icons",
+      "defaults": {
+        "size": 15,
+        "stroke": null
+      },
+      "style": "Crisp 15×15 UI glyphs designed for dense interface chrome (menus, toolbars, controls).",
+      "whenToUse": "Radix UI / Radix Themes projects and compact application chrome where icons sit at small fixed sizes.",
+      "iconCount": 342,
+      "aliasCount": 3,
+      "version": null,
+      "file": "data/radix-icons.json"
+    },
+    {
+      "prefix": "feather",
+      "name": "Feather",
+      "license": "MIT",
+      "home": "https://feathericons.com",
+      "docs": "https://feathericons.com",
+      "npm": "feather-icons / react-feather",
+      "defaults": {
+        "size": 24,
+        "stroke": 2
+      },
+      "style": "The original minimalist 24px line set that Lucide forked from. Small and stable.",
+      "whenToUse": "Legacy or minimalist projects already on Feather. For new work prefer Lucide (actively maintained superset).",
+      "iconCount": 286,
+      "aliasCount": 0,
+      "version": null,
+      "file": "data/feather.json"
+    },
+    {
+      "prefix": "material-symbols",
+      "name": "Material Symbols",
+      "license": "Apache-2.0",
+      "home": "https://fonts.google.com/icons",
+      "docs": "https://fonts.google.com/icons",
+      "npm": "material-symbols (variable font) / @material-symbols/*",
+      "defaults": {
+        "size": 24,
+        "stroke": null
+      },
+      "style": "Google's official system icons (successor to Material Icons). Outlined / Rounded / Sharp; fill, weight, grade, optical-size axes.",
+      "whenToUse": "Android, Google-ecosystem, or Material Design 3 products, or when you need an enormous, official, system-grade catalog.",
+      "iconCount": 16322,
+      "aliasCount": 2362,
+      "version": null,
+      "file": "data/material-symbols.json"
+    },
+    {
+      "prefix": "ri",
+      "name": "Remix Icon",
+      "license": "Apache-2.0",
+      "home": "https://remixicon.com",
+      "docs": "https://remixicon.com",
+      "npm": "remixicon / @remixicon/react / @remixicon/vue",
+      "defaults": {
+        "size": 24,
+        "stroke": null
+      },
+      "style": "Neutral system icons on a 24px grid, each available in Line and Fill variants. Strong brand/logo coverage.",
+      "whenToUse": "When you want paired line+fill variants (e.g. active/inactive tab states) and good logo/brand glyph coverage.",
+      "iconCount": 3229,
+      "aliasCount": 15,
+      "version": null,
+      "file": "data/ri.json"
+    },
+    {
+      "prefix": "bi",
+      "name": "Bootstrap Icons",
+      "license": "MIT",
+      "home": "https://icons.getbootstrap.com",
+      "docs": "https://icons.getbootstrap.com",
+      "npm": "bootstrap-icons",
+      "defaults": {
+        "size": 16,
+        "stroke": null
+      },
+      "style": "Official Bootstrap set. Mostly solid/filled forms on a 16px grid; many have outline+fill pairs.",
+      "whenToUse": "Bootstrap-based projects, or when you want filled glyphs that read well at small sizes.",
+      "iconCount": 2084,
+      "aliasCount": 6,
+      "version": null,
+      "file": "data/bi.json"
+    },
+    {
+      "prefix": "iconoir",
+      "name": "Iconoir",
+      "license": "MIT",
+      "home": "https://iconoir.com",
+      "docs": "https://iconoir.com",
+      "npm": "iconoir / iconoir-react / @iconoir/vue",
+      "defaults": {
+        "size": 24,
+        "stroke": 1.5
+      },
+      "style": "Large hand-crafted 1.5px-stroke line set with a slightly softer, editorial feel than Lucide/Tabler.",
+      "whenToUse": "Marketing sites and products wanting a refined, lighter-stroke line aesthetic distinct from the 2px crowd.",
+      "iconCount": 1682,
+      "aliasCount": 338,
+      "version": null,
+      "file": "data/iconoir.json"
+    },
+    {
+      "prefix": "bx",
+      "name": "Boxicons",
+      "license": "MIT",
+      "home": "https://boxicons.com",
+      "docs": "https://boxicons.com",
+      "npm": "boxicons",
+      "defaults": {
+        "size": 24,
+        "stroke": null
+      },
+      "style": "Broad set in three families: Regular (line, bx-), Solid (filled, bxs-) and Logos (brands, bxl-).",
+      "whenToUse": "When you need both line and solid versions plus a big library of brand/social logos in one set.",
+      "iconCount": 1609,
+      "aliasCount": 814,
+      "version": null,
+      "file": "data/bx.json"
+    }
+  ]
+}
