@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c0c">
+  <title>Doom Face Archive — Original Status Animations</title>
+  <link rel="stylesheet" href="doom-faces/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Status face archive · Doom 1.9</p>
+        <h1>Marine<br>Condition</h1>
+        <p class="lede">The original 1993 status face, reconstructed from the shareware IWAD and timed against id Software’s 35 Hz status-bar code. Inspect every state. Export any sequence as a palette-faithful GIF.</p>
+      </div>
+      <div class="hero-unit">
+        <div class="hero-screen">
+          <div class="hero-canvas-wrap"><canvas class="face" id="hero-face" width="35" height="31" aria-label="Animated Doom status face"></canvas></div>
+          <div class="hero-meta">
+            <span class="hero-name" id="hero-name">STFST00</span>
+            <span class="hero-time" id="hero-time">17 tics<br>486 ms</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="control-strip" aria-label="Viewer controls">
+      <div class="control-group">
+        <span class="readout-label">Playback</span>
+        <div class="segmented" id="speed-control">
+          <button type="button" data-speed="0.5">½×</button>
+          <button type="button" data-speed="1" class="active">1×</button>
+          <button type="button" data-speed="2">2×</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="readout-label">Face plate</span>
+        <div class="segmented" id="background-control">
+          <button type="button" data-background="true" class="active">On</button>
+          <button type="button" data-background="false">Transparent</button>
+        </div>
+        <button class="utility-button" id="play-all" type="button">Pause all</button>
+      </div>
+    </div>
+
+    <main>
+      <section aria-labelledby="animations-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label">01 / State machine</p>
+            <h2 id="animations-title">Original reactions</h2>
+          </div>
+          <p class="section-note">Timing is expressed in engine tics. One tic is 28.57 ms; Doom runs this widget at 35 tics per second.</p>
+        </div>
+        <aside class="vanilla-note">
+          <strong>Vanilla accuracy note</strong>
+          <span>Original PC Doom has no blink sprite or blink branch. Its three idle sprites look center, left, and right. This archive keeps that behavior instead of inventing a blink; the shipped OUCH sign bug is documented separately from the intended reaction.</span>
+        </aside>
+        <div class="animation-grid" id="animation-grid"></div>
+      </section>
+
+      <section class="sprite-section" aria-labelledby="sprites-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label">02 / Source inventory</p>
+            <h2 id="sprites-title">Every face lump</h2>
+          </div>
+          <p class="section-note" id="sprite-count">42 face sprites + 4 multiplayer plates, extracted from the verified Doom shareware v1.9 IWAD.</p>
+        </div>
+        <div class="sprite-grid" id="sprite-grid"></div>
+      </section>
+
+      <section class="method-grid" aria-label="Implementation details">
+        <article class="method-item">
+          <b>01 / ASSET</b>
+          <h3>WAD-native pixels</h3>
+          <p>Patch columns are decoded directly and mapped through the first PLAYPAL palette. Transparent pixels remain transparent.</p>
+        </article>
+        <article class="method-item">
+          <b>02 / MOTION</b>
+          <h3>35 Hz timing</h3>
+          <p>Idle holds for 17 tics, turns for 35, the evil grin for 70, and sustained fire waits 70 before rampage.</p>
+        </article>
+        <article class="method-item">
+          <b>03 / EXPORT</b>
+          <h3>Offline GIF89a</h3>
+          <p>The exporter uses the original Doom palette and integer delays. No network, canvas smoothing, or external library is involved.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-row">
+        <span>Viewer code: MIT · Doom artwork © id Software / ZeniMax</span>
+        <span>Source: freely distributable Doom shareware v1.9 · SHA-256 1d7d43be…ac771</span>
+      </div>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../data/doom-faces/assets/manifest.js"></script>
+  <script src="../data/doom-faces/animations.js"></script>
+  <script src="doom-faces/app.js"></script>
+</body>
+</html>

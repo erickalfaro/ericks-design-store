@@ -1,0 +1,920 @@
+{
+  "generatedBy": "scripts/build-avatar-gallery.mjs",
+  "domain": "avatars",
+  "note": "Seed → deterministic avatar. Every offline style is STATIC; none animate natively (see docs/avatars/animation.md).",
+  "totalStyles": 45,
+  "families": {
+    "pixel": {
+      "label": "Pixel & retro",
+      "blurb": "Low-res 8-bit / dithered pixel-grid looks."
+    },
+    "identicon": {
+      "label": "Identicons",
+      "blurb": "Hash-based geometric / pixel-grid marks (no face)."
+    },
+    "illustrated": {
+      "label": "Illustrated characters",
+      "blurb": "Cartoon faces & figures generated from a seed."
+    },
+    "abstract": {
+      "label": "Abstract & minimal",
+      "blurb": "Gradient / geometric marks with no face."
+    },
+    "initials": {
+      "label": "Initials",
+      "blurb": "Letter-based avatars from a name."
+    },
+    "robot": {
+      "label": "Robots & novelty",
+      "blurb": "Robots and other fun non-human characters."
+    }
+  },
+  "previewSeeds": [
+    "Erick",
+    "Ada Lovelace",
+    "octocat",
+    "design-store",
+    "sunny-42",
+    "Café Noir"
+  ],
+  "styles": [
+    {
+      "id": "pixel-art",
+      "name": "Pixel Art",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "pixel",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Retro 8-bit pixel-sprite people — the classic low-res look.",
+      "home": "https://www.dicebear.com/styles/pixel-art/"
+    },
+    {
+      "id": "pixel-art-neutral",
+      "name": "Pixel Art Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "pixel",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Pixel-art faces only, neutral crop (no shoulders).",
+      "home": "https://www.dicebear.com/styles/pixel-art-neutral/"
+    },
+    {
+      "id": "bottts",
+      "name": "Bottts",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "robot",
+      "license": {
+        "name": "Free for personal & commercial use",
+        "url": "https://www.dicebear.com/licenses/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Friendly generated robots (Bottts by Pablo Stanley).",
+      "home": "https://www.dicebear.com/styles/bottts/"
+    },
+    {
+      "id": "bottts-neutral",
+      "name": "Bottts Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "robot",
+      "license": {
+        "name": "Free for personal & commercial use",
+        "url": "https://www.dicebear.com/licenses/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Bottts robot heads, tight neutral crop.",
+      "home": "https://www.dicebear.com/styles/bottts-neutral/"
+    },
+    {
+      "id": "identicon",
+      "name": "Identicon",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "identicon",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Symmetric hash-based geometric identicon.",
+      "home": "https://www.dicebear.com/styles/identicon/"
+    },
+    {
+      "id": "initials",
+      "name": "Initials",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "initials",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Initials on a colored background (Gravatar-style fallback).",
+      "home": "https://www.dicebear.com/styles/initials/"
+    },
+    {
+      "id": "glass",
+      "name": "Glass",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "abstract",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Frosted-glass gradient blobs — abstract, no face.",
+      "home": "https://www.dicebear.com/styles/glass/"
+    },
+    {
+      "id": "rings",
+      "name": "Rings",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "abstract",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Concentric colored rings from the seed.",
+      "home": "https://www.dicebear.com/styles/rings/"
+    },
+    {
+      "id": "shapes",
+      "name": "Shapes",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "abstract",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Layered geometric shapes — clean abstract mark.",
+      "home": "https://www.dicebear.com/styles/shapes/"
+    },
+    {
+      "id": "icons",
+      "name": "Icons",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/twbs/icons/blob/main/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "A Bootstrap icon on a colored tile.",
+      "home": "https://www.dicebear.com/styles/icons/"
+    },
+    {
+      "id": "thumbs",
+      "name": "Thumbs",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "abstract",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Rounded “thumb” characters with a simple face.",
+      "home": "https://www.dicebear.com/styles/thumbs/"
+    },
+    {
+      "id": "lorelei",
+      "name": "Lorelei",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Soft, elegant line-drawn portraits.",
+      "home": "https://www.dicebear.com/styles/lorelei/"
+    },
+    {
+      "id": "lorelei-neutral",
+      "name": "Lorelei Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Lorelei faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/lorelei-neutral/"
+    },
+    {
+      "id": "notionists",
+      "name": "Notionists",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Notion-style hand-drawn people.",
+      "home": "https://www.dicebear.com/styles/notionists/"
+    },
+    {
+      "id": "notionists-neutral",
+      "name": "Notionists Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Notionists faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/notionists-neutral/"
+    },
+    {
+      "id": "open-peeps",
+      "name": "Open Peeps",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC0 1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Pablo Stanley’s Open Peeps hand-drawn characters.",
+      "home": "https://www.dicebear.com/styles/open-peeps/"
+    },
+    {
+      "id": "adventurer",
+      "name": "Adventurer",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Hand-drawn adventurer characters.",
+      "home": "https://www.dicebear.com/styles/adventurer/"
+    },
+    {
+      "id": "adventurer-neutral",
+      "name": "Adventurer Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Adventurer faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/adventurer-neutral/"
+    },
+    {
+      "id": "avataaars",
+      "name": "Avataaars",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "Free for personal & commercial use",
+        "url": "https://www.dicebear.com/licenses/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "The original Avataaars cartoon look (Pablo Stanley).",
+      "home": "https://www.dicebear.com/styles/avataaars/"
+    },
+    {
+      "id": "avataaars-neutral",
+      "name": "Avataaars Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "Free for personal & commercial use",
+        "url": "https://www.dicebear.com/licenses/",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Avataaars faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/avataaars-neutral/"
+    },
+    {
+      "id": "big-ears",
+      "name": "Big Ears",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Big-eared minimalist cartoon people.",
+      "home": "https://www.dicebear.com/styles/big-ears/"
+    },
+    {
+      "id": "big-ears-neutral",
+      "name": "Big Ears Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Big Ears faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/big-ears-neutral/"
+    },
+    {
+      "id": "big-smile",
+      "name": "Big Smile",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Cheerful, bold big-smile characters.",
+      "home": "https://www.dicebear.com/styles/big-smile/"
+    },
+    {
+      "id": "croodles",
+      "name": "Croodles",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Loose doodle-style hand-drawn characters.",
+      "home": "https://www.dicebear.com/styles/croodles/"
+    },
+    {
+      "id": "croodles-neutral",
+      "name": "Croodles Neutral",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Croodles faces only, neutral crop.",
+      "home": "https://www.dicebear.com/styles/croodles-neutral/"
+    },
+    {
+      "id": "dylan",
+      "name": "Dylan",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Bold, blocky modern cartoon heads.",
+      "home": "https://www.dicebear.com/styles/dylan/"
+    },
+    {
+      "id": "fun-emoji",
+      "name": "Fun Emoji",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Playful emoji-style round faces.",
+      "home": "https://www.dicebear.com/styles/fun-emoji/"
+    },
+    {
+      "id": "micah",
+      "name": "Micah",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Clean vector portraits (Micah by Zeph Colombatto).",
+      "home": "https://www.dicebear.com/styles/micah/"
+    },
+    {
+      "id": "miniavs",
+      "name": "Miniavs",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Minimal flat mini-avatars.",
+      "home": "https://www.dicebear.com/styles/miniavs/"
+    },
+    {
+      "id": "personas",
+      "name": "Personas",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Draftbit Personas — flat illustrated people.",
+      "home": "https://www.dicebear.com/styles/personas/"
+    },
+    {
+      "id": "toon-head",
+      "name": "Toon Head",
+      "provider": "DiceBear",
+      "library": "@dicebear/collection",
+      "family": "illustrated",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Chunky animated-series “toon” heads.",
+      "home": "https://www.dicebear.com/styles/toon-head/"
+    },
+    {
+      "id": "jdenticon",
+      "name": "Jdenticon",
+      "provider": "Jdenticon",
+      "library": "jdenticon",
+      "family": "identicon",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/dmester/jdenticon/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Hash → symmetric SVG identicon (browser + Node, CDN-friendly).",
+      "home": "https://jdenticon.com"
+    },
+    {
+      "id": "minidenticons",
+      "name": "Minidenticons",
+      "provider": "Minidenticons",
+      "library": "minidenticons",
+      "family": "identicon",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/laurentpayot/minidenticons/blob/main/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "The tiniest option — <1 KB, colored 5×5 pixel-grid SVG from a string.",
+      "home": "https://github.com/laurentpayot/minidenticons"
+    },
+    {
+      "id": "multiavatar",
+      "name": "Multiavatar",
+      "provider": "Multiavatar",
+      "library": "@multiavatar/multiavatar",
+      "family": "illustrated",
+      "license": {
+        "name": "Multiavatar License v1.0",
+        "url": "https://github.com/multiavatar/Multiavatar/blob/master/LICENSE",
+        "attribution": false,
+        "restricted": true
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Diverse, multicultural characters — ~12 billion combinations.",
+      "home": "https://multiavatar.com"
+    },
+    {
+      "id": "dither",
+      "name": "Dither Avatar",
+      "provider": "dither-avatar",
+      "library": "dither-avatar",
+      "family": "pixel",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/maartenkeizer/dither-avatar",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Bayer 4×4 ordered-dither pixel grid; hue from a deterministic seed hash.",
+      "home": "https://github.com/maartenkeizer/dither-avatar"
+    },
+    {
+      "id": "identicon-js",
+      "name": "Identicon.js",
+      "provider": "identicon.js",
+      "library": "identicon.js",
+      "family": "identicon",
+      "license": {
+        "name": "BSD-2-Clause",
+        "url": "https://github.com/stewartlord/identicon.js/blob/master/license.txt",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "The classic GitHub-style geometric identicon (own PNG/SVG encoder).",
+      "home": "https://github.com/stewartlord/identicon.js"
+    },
+    {
+      "id": "blockies",
+      "name": "Blockies",
+      "provider": "Ethereum Blockies",
+      "library": "ethereum-blockies-base64",
+      "family": "identicon",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/MyEtherWallet/blockies",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "png",
+      "blurb": "The blocky pixel identicon from Ethereum/MetaMask (PNG data-URI).",
+      "home": "https://github.com/MyEtherWallet/blockies"
+    },
+    {
+      "id": "boring-beam",
+      "name": "Boring Beam",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Smiling “beam” face — the Boring Avatars signature look.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "boring-marble",
+      "name": "Boring Marble",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Flowing marbled gradient blobs.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "boring-pixel",
+      "name": "Boring Pixel",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "pixel",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Mosaic pixel-grid of seed-derived colors.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "boring-sunset",
+      "name": "Boring Sunset",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Layered sunset gradient bands.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "boring-ring",
+      "name": "Boring Ring",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Concentric rings of color.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "boring-bauhaus",
+      "name": "Boring Bauhaus",
+      "provider": "Boring Avatars",
+      "library": "boring-avatars",
+      "family": "abstract",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/boringdesigners/boring-avatars/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Bauhaus-style geometric composition.",
+      "home": "https://boringavatars.com"
+    },
+    {
+      "id": "nice-avatar",
+      "name": "Nice Avatar",
+      "provider": "react-nice-avatar",
+      "library": "react-nice-avatar",
+      "family": "illustrated",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/dapi-labs/react-nice-avatar/blob/main/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "html",
+      "blurb": "Clean flat portraits with fine per-feature control (hair, eyes, glasses…).",
+      "home": "https://github.com/dapi-labs/react-nice-avatar"
+    },
+    {
+      "id": "bigheads",
+      "name": "Big Heads",
+      "provider": "Big Heads / Bean Heads",
+      "library": "@bigheads/core",
+      "family": "illustrated",
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/RobertBroersma/bigheads/blob/master/LICENSE",
+        "attribution": false
+      },
+      "animated": false,
+      "offline": true,
+      "output": "svg",
+      "blurb": "Exaggerated-head cartoon avatars, billions of composable combinations.",
+      "home": "https://bigheads.io"
+    }
+  ],
+  "referenceOnly": [
+    {
+      "id": "avataaars-original",
+      "name": "Avataaars (original)",
+      "category": "illustrated",
+      "license": "MIT / free commercial",
+      "animated": false,
+      "offline": "needs-react",
+      "home": "https://github.com/fangpenlin/avataaars",
+      "reach": "React: `avataaars` (React 17). Vanilla SVG: `Avataaars.create(opts)` via HB0N0/AvataaarsJs (GitHub-only).",
+      "note": "The original Pablo Stanley cartoon library. Offline SVG here is covered by DiceBear `avataaars` / `avataaars-neutral` — use those unless you need the original React options."
+    },
+    {
+      "id": "avataaars-animated",
+      "name": "Avataaars — animated forks",
+      "category": "illustrated",
+      "license": "MIT",
+      "animated": true,
+      "offline": "needs-react",
+      "home": "https://github.com/gschoppe/avataaars",
+      "reach": "`@gschoppe/avataaars` (opt-in idle CSS `@keyframes` — import dist/animations.css) · `@vierweb/avataaars` (React state expression-cycling + on-hover sequences).",
+      "note": "THE only avatar generators found with native animation. Both are lightly-maintained React forks of Avataaars, not canonical packages. See docs/avatars/animation.md."
+    },
+    {
+      "id": "playful-avatars",
+      "name": "Playful Avatars",
+      "category": "abstract",
+      "license": "MIT",
+      "animated": false,
+      "offline": "browser-only",
+      "home": "https://github.com/cmaas/playful-avatars",
+      "reach": "Web component: `<playful-avatar name=\"x\">`. Needs a DOM (customElements) — browser, not Node.",
+      "note": "A framework-free rewrite of Boring Avatars; identical SVG output, no React. For offline generation here use the `boring-*` styles."
+    },
+    {
+      "id": "pixel-avatar-lib",
+      "name": "pixel-avatar-lib",
+      "category": "pixel",
+      "license": "Apache-2.0",
+      "animated": false,
+      "offline": "browser-only",
+      "home": "https://github.com/snjyor/pixel-avatar-lib",
+      "reach": "React + `<canvas>`; a \"DNA\" string encodes hair/face/clothing/accessories.",
+      "note": "Canvas-based, so it renders in a browser, not to an offline SVG string. For 8-bit avatars here use `pixel-art` or `dither`."
+    },
+    {
+      "id": "squareicon",
+      "name": "Squareicon",
+      "category": "identicon",
+      "license": "MIT",
+      "animated": false,
+      "offline": "needs-canvas",
+      "home": "https://github.com/mistic100/squareicon",
+      "reach": "Node, but depends on the native `canvas` module and outputs PNG.",
+      "note": "Dropped from the offline toolchain to keep it pure-JS (no native build). `identicon-js` and `blockies` cover GitHub-style / blocky identicons."
+    },
+    {
+      "id": "robohash",
+      "name": "Robohash",
+      "category": "robot",
+      "license": "Free (attribution appreciated)",
+      "animated": false,
+      "offline": "http-api",
+      "home": "https://robohash.org",
+      "reach": "HTTP: `https://robohash.org/<text>?set=set1..set5&bgset=bg1|bg2&size=200x200`. Sets: robots / monsters / robot-heads / kittens / human heads.",
+      "note": "Hosted only — no offline lib. For offline robots use DiceBear `bottts`. The `.gif` output is a single static frame, not animation."
+    },
+    {
+      "id": "ui-avatars",
+      "name": "UI Avatars",
+      "category": "initials",
+      "license": "Free",
+      "animated": false,
+      "offline": "http-api",
+      "home": "https://ui-avatars.com",
+      "reach": "HTTP: `https://ui-avatars.com/api/?name=Erick&background=random&format=svg`.",
+      "note": "Hosted initials avatars. Offline equivalent here: DiceBear `initials`."
+    },
+    {
+      "id": "python-avatars",
+      "name": "python_avatars",
+      "category": "illustrated",
+      "license": "MIT",
+      "animated": false,
+      "offline": "other-language",
+      "home": "https://github.com/ibonn/python_avatars",
+      "reach": "PyPI `python-avatars` (Python). Pure-SVG, add your own clothes/hair/eyes.",
+      "note": "Python, not JS — use in Python projects. Cartoon SVG in the Avataaars lineage."
+    },
+    {
+      "id": "pixelated-avatar-generator",
+      "name": "pixelated-avatar-generator",
+      "category": "pixel",
+      "license": "MIT",
+      "animated": false,
+      "offline": "other-language",
+      "home": "https://hackage.haskell.org/package/pixelated-avatar-generator",
+      "reach": "Haskell library/CLI; PNG output from a 32-char hex (MD5) seed.",
+      "note": "Haskell, not JS. For offline pixel PNGs here use `blockies`."
+    },
+    {
+      "id": "personas-draftbit",
+      "name": "Personas by Draftbit",
+      "category": "illustrated",
+      "license": "MIT (repo)",
+      "animated": false,
+      "offline": "browser-only",
+      "home": "https://github.com/draftbit/avatar-generator",
+      "reach": "Unpublished React + ReScript + html2canvas app (repo is `private`).",
+      "note": "Not on npm. The style ships offline here as DiceBear `personas`."
+    }
+  ]
+}

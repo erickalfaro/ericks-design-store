@@ -1,19 +1,38 @@
 # Erick's Design Store
 
 **The one offline design compendium for every project — web apps & IoT.** A single source for
-the design decisions that otherwise get re-made from scratch each time: icons today; color,
-typography, spacing, components, motion, and IoT/device UI patterns next — all behind the same
-repeatable pattern (offline data → tooling → docs → a Claude skill).
+the design decisions that otherwise get re-made from scratch each time: icons and avatars today;
+color, typography, spacing, components, motion, and IoT/device UI patterns next — all behind the
+same repeatable pattern (offline data → tooling → docs → a Claude skill).
 
-> **This is a growing compendium, not an icon dump.** Icons are simply **domain one**. The whole
-> point of the structure is that new design domains plug in the same way without restructuring —
-> see **[docs/compendium.md](docs/compendium.md)** for the model and the planned domains.
+> **This is a growing compendium, not an icon dump.** Icons are simply **domain one**; **avatars**
+> are domain two. New design domains plug in the same way without restructuring — see
+> **[docs/compendium.md](docs/compendium.md)** for the model and the planned domains.
 
 ## Domain one — Icons
 
 **44,000+ icons across 11 open-source sets** are vendored locally as compact Iconify JSON, plus a
 CLI and a Claude skill that render any icon to **SVG / React / Vue / Svelte / Iconify name** on
 demand. No per-project icon dependency, no network, no hundreds of thousands of loose SVG files.
+
+## Domain two — Avatars
+
+**45 generated-avatar styles** across 6 families (pixel, identicons, illustrated characters,
+abstract, initials, robots), reusing proven libraries (DiceBear, jdenticon, Minidenticons,
+Multiavatar, Boring Avatars, Blockies, Big Heads, react-nice-avatar). Feed any **seed** (name,
+email, id, hash) and get a **deterministic** avatar as **SVG / data-URI / PNG** — fully offline, no
+hosted API. The same generator core powers both the CLI and a **live seed-driven browser**.
+
+```bash
+node scripts/avatar.mjs --list                       # all 45, grouped by family + license
+node scripts/avatar.mjs lorelei:erick                # SVG (default)
+node scripts/avatar.mjs bottts:acme --size 128 --format datauri
+open gallery/avatars.html                            # type a seed → everything re-renders live
+```
+
+Details: [`docs/avatars/`](docs/avatars/) · registry: [`data/avatars/registry.json`](data/avatars/registry.json).
+**Native animation?** None of them — the whole ecosystem is static; animate one yourself
+(CSS/Motion). Full finding: [`docs/avatars/animation.md`](docs/avatars/animation.md).
 
 ## Why this exists (the architecture)
 
@@ -71,19 +90,22 @@ Aggregators & the full 200k-icon catalog: [`docs/aggregators.md`](docs/aggregato
 ## Layout
 
 ```
-data/        vendored Iconify JSON (1 per set) + meta.json registry  — source of truth
-scripts/     fetch-icons · icon (render/search) · build-gallery · fetch-full-iconify
-gallery/     generated browsable HTML (index + per-set, search + click-to-copy)
-docs/        per-set reference + lucide-animated + aggregators
+data/        icons: Iconify JSON (1 per set) + meta.json  ·  avatars/registry.json  — source of truth
+scripts/     icons: fetch-icons · icon · build-gallery · fetch-full-iconify
+             avatars: avatars-core (shared generators) · avatar (CLI) · avatars-browser · build-avatar-gallery
+gallery/     generated HTML — index + per-set icon pages; avatars.html (live seed-driven)
+docs/        icons: per-set + lucide-animated + aggregators  ·  avatars/ (index · animation · styles)
 vendor/      lucide-animated reference component
-.claude/     the design-icons skill
+.claude/     the design-icons + design-avatars skills
 ```
 
 ## Updating
 
 ```bash
 npm run fetch      # re-pull latest icons from @iconify-json/* (jsDelivr)
-npm run gallery    # regenerate gallery + per-set docs
+npm run gallery    # regenerate icon gallery + per-set docs
+npm run avatars    # regenerate avatar gallery + registry + styles.md
+npm run build      # all of the above
 ```
 
 ## License
@@ -95,15 +117,15 @@ to the original authors. Full per-set attribution: [THIRD_PARTY_LICENSES.md](THI
 
 ## A growing compendium (this is the point)
 
-Icons are **domain one**. The repo is deliberately structured so every other design concern plugs
-in the **same four-layer way** — and the icon system never has to change:
+Icons are **domain one**, avatars **domain two**. The repo is deliberately structured so every
+other design concern plugs in the **same four-layer way** — and existing domains never have to change:
 
-| Layer | What it is | Icons (today) |
-|---|---|---|
-| **Data** | vendored, offline source of truth | `data/<prefix>.json` |
-| **Tooling** | turns data into usable output | `scripts/icon.mjs` |
-| **Docs** | reference + when-to-use judgment | `docs/<prefix>.md` |
-| **Skill** | how Claude pulls it into any project | `.claude/skills/design-icons/` |
+| Layer | What it is | Icons | Avatars |
+|---|---|---|---|
+| **Data** | vendored, offline source of truth | `data/<prefix>.json` | `data/avatars/registry.json` + `scripts/avatars-core.mjs` |
+| **Tooling** | turns data into usable output | `scripts/icon.mjs` | `scripts/avatar.mjs` |
+| **Docs** | reference + when-to-use judgment | `docs/<prefix>.md` | `docs/avatars/` |
+| **Skill** | how Claude pulls it into any project | `.claude/skills/design-icons/` | `.claude/skills/design-avatars/` |
 
 **Planned domains** (blueprint, not yet built): **Color** · **Typography** · **Spacing & layout**
 · **Components** · **Motion** · **IoT / device UI** · **Imagery**. Each becomes a self-contained

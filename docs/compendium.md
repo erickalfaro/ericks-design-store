@@ -4,6 +4,12 @@
 source for *every* design decision across Erick's web apps and IoT projects. The icon system you
 see today is one instance of a repeatable pattern; every future domain plugs in the same way.
 
+**Avatars are domain two — the pattern's first repeat.** They proved the model works for a *different
+shape* of problem: icons are a fixed catalog, avatars are **generators** (seed → image). Nothing about
+the icon layers changed. See [docs/avatars/index.md](avatars/index.md) — data is
+`scripts/avatars-core.mjs` → `data/avatars/registry.json`, tooling is `scripts/avatar.mjs`, docs are
+`docs/avatars/`, and the skill is `.claude/skills/design-avatars/`.
+
 ## The repeatable domain pattern
 
 Each design domain follows the same four-layer shape that icons already use:
@@ -34,8 +40,9 @@ These are the natural next layers of the compendium. Each is additive — same p
 | **IoT / device UI** | Patterns for small screens, e-ink, dashboards, status/telemetry, offline-first states | docs + component snippets + device-aware tokens |
 | **Imagery & illustration** | Sources, license-clean illustration/3D/pattern libraries, usage guidance | docs + (optionally) vendored assets |
 
-> None of these are built yet — this is the blueprint. When a project needs one, stand it up using
-> the four-layer pattern above and surface it through a `design-<domain>` skill.
+> **Built so far:** Icons (domain one) · Avatars (domain two). The domains above are the remaining
+> blueprint — none built yet. When a project needs one, stand it up using the four-layer pattern above
+> and surface it through a `design-<domain>` skill.
 
 ## Why this matters
 

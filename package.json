@@ -3,17 +3,35 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "All-encompassing design compendium for web apps & IoT — offline icon data (12 sets via Iconify JSON) + a Claude skill and CLI to render any icon as SVG / React / Vue / Svelte / Iconify name.",
+  "description": "All-encompassing design compendium for web apps & IoT — offline icon data (12 sets via Iconify JSON) + 45 offline avatar generators, with a Claude skill and CLI to render any icon or avatar as SVG / React / Vue / Svelte / data-URI.",
   "scripts": {
     "fetch": "node scripts/fetch-icons.mjs",
     "icon": "node scripts/icon.mjs",
     "gallery": "node scripts/build-gallery.mjs",
     "fetch:full": "node scripts/fetch-full-iconify.mjs",
-    "build": "npm run fetch && npm run gallery"
+    "avatar": "node scripts/avatar.mjs",
+    "avatars": "node scripts/build-avatar-gallery.mjs",
+    "build": "npm run fetch && npm run gallery && npm run avatars"
   },
   "dependencies": {
+    "@bigheads/core": "^0.3.3",
+    "@dicebear/collection": "^9.4.2",
+    "@dicebear/core": "^9.4.3",
     "@iconify/utils": "^2.1.33",
+    "@multiavatar/multiavatar": "^1.0.7",
     "@svgr/core": "^8.1.0",
-    "@svgr/plugin-jsx": "^8.1.0"
+    "@svgr/plugin-jsx": "^8.1.0",
+    "boring-avatars": "^2.0.4",
+    "dither-avatar": "^1.0.0",
+    "ethereum-blockies-base64": "^1.0.2",
+    "identicon.js": "^2.3.3",
+    "jdenticon": "^3.3.0",
+    "minidenticons": "^4.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-nice-avatar": "^1.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2"
   }
 }

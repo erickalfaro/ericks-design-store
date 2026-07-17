@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Living dither — a gallery of spirits, storms, and seas</title>
+<style>
+  :root{
+    color-scheme:light dark;
+    --bg:#0d1117;--panel:#161b22;--fg:#e6edf3;--muted:#8b949e;--border:#30363d;--accent:#58a6ff;
+  }
+  @media (prefers-color-scheme:light){:root{--bg:#fff;--panel:#f6f8fa;--fg:#1f2328;--muted:#656d76;--border:#d0d7de;--accent:#0969da}}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);
+       font:15px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+       display:flex;flex-direction:column;align-items:center;padding:26px 18px 50px}
+  h1{margin:0 0 6px;font-size:20px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;max-width:64ch;text-align:center;margin:0 0 18px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85em;background:#8882;padding:1px 5px;border-radius:5px}
+  .stage{width:min(88vw,520px);aspect-ratio:1;border:1px solid var(--border);border-radius:14px;
+         overflow:hidden;background:#000;box-shadow:0 10px 40px -20px #000;cursor:pointer}
+  canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .panel{margin-top:18px;width:min(94vw,600px);border:1px solid var(--border);border-radius:12px;background:var(--panel);padding:14px 16px}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;justify-content:center}
+  .ctl{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+  .ctl label{white-space:nowrap}
+  input[type=range]{width:92px;accent-color:var(--accent)}
+  input[type=color]{width:32px;height:26px;padding:0;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer}
+  button.btn{border:1px solid var(--border);background:transparent;color:var(--fg);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px}
+  button.btn:hover{border-color:var(--accent)}
+  button.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .simbar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .simbar .name{font-weight:600;color:var(--fg);min-width:200px;text-align:center;font-size:14px}
+  .simbar .idx{color:var(--muted);font-variant-numeric:tabular-nums}
+  .tagline{color:var(--muted);font-size:12.5px;font-style:italic;text-align:center;margin-top:8px;min-height:1.2em}
+  .sims{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px;max-height:150px;overflow:auto;padding:2px}
+  .schip{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:7px;padding:4px 9px;font-size:12px;cursor:pointer;white-space:nowrap}
+  .schip:hover{border-color:var(--accent)}
+  .schip.on{border-color:var(--accent);color:#fff;background:var(--accent)}
+  .note{margin-top:20px;max-width:66ch;color:var(--muted);font-size:12.5px;text-align:center}
+  .bayer{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);white-space:pre;
+         border:1px dashed var(--border);border-radius:8px;padding:8px 12px;margin-top:14px;display:inline-block}
+</style>
+</head>
+<body>
+  <h1>Living dither</h1>
+  <p class="sub"><b>A gallery of moving pictures</b> — spirits, storms, seas, and galaxies. Each piece is pure math
+  writing a continuous field every frame — breathing entities, figures of flame and light, oceans, lightning,
+  black holes — rendered through the same ordered <b>Bayer&nbsp;4×4</b> dither <code>dither-avatar</code> uses:
+  one ink, on or off. <b>← →</b> switch · <b>click the canvas</b> to reseed.</p>
+
+  <div class="stage"><canvas id="c" width="104" height="104"></canvas></div>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="ctl"><label for="ink">ink</label><input type="color" id="ink" value="#7ee787"></div>
+      <div class="ctl"><label for="speed">speed</label><input type="range" id="speed" min="0" max="4" step="0.1" value="1"></div>
+      <div class="ctl"><label for="cell">pixel</label><input type="range" id="cell" min="3" max="9" step="1" value="5"></div>
+      <button class="btn" id="play">⏸ pause</button>
+      <button class="btn" id="reseed">⟳ reseed</button>
+    </div>
+    <div class="simbar">
+      <button class="btn" id="prev">‹</button>
+      <span class="name" id="sname"></span>
+      <button class="btn" id="next">›</button>
+      <span class="idx" id="sidx"></span>
+      <button class="btn" id="rand">🎲 random</button>
+      <button class="btn" id="auto">↻ auto-cycle</button>
+    </div>
+    <div class="tagline" id="stag"></div>
+    <div class="sims" id="sims"></div>
+  </div>
+
+  <div class="bayer" id="bayer"></div>
+  <p class="note">Each piece writes a continuous value per cell; the dither turns that into <b>one ink color</b> on/off
+  per pixel via <code>value &gt; (BAYER[y%4][x%4] + 0.5) / 16</code>. The art is in the field, not the palette.</p>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const TAU = Math.PI * 2;
+const fract = x => x - Math.floor(x);
+const rnd = Math.random;
+
+const BAYER = [0,8,2,10, 12,4,14,6, 3,11,1,9, 15,7,13,5];
+document.getElementById('bayer').textContent =
+  'Bayer 4×4 threshold matrix\n' +
+  [0,1,2,3].map(r => [0,1,2,3].map(c => String(BAYER[r*4+c]).padStart(2,' ')).join('  ')).join('\n');
+
+// Shared, mutable simulation grid. `field` (values ~[0,1]) is what the dither renders;
+// every sim writes into it each step. W,H,N are the logical grid (set by the pixel slider).
+let W, H, N, field;
+
+/* ---------------------------------------------------------- shared helpers */
+
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+const smooth = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+
+// value noise + fbm — the texture engine behind the sky / fire / mandala pieces
+const vnoise = (x, y, z) => {
+  const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+  const u = xf*xf*(3-2*xf), v = yf*yf*(3-2*yf);
+  const h = (a, b) => fract(Math.sin(a*127.1 + b*311.7 + z*74.7)*43758.5453);
+  const n00 = h(xi,yi), n10 = h(xi+1,yi), n01 = h(xi,yi+1), n11 = h(xi+1,yi+1);
+  return (n00*(1-u)+n10*u)*(1-v) + (n01*(1-u)+n11*u)*v;
+};
+const fbm = (x, y, z, oct = 3) => {
+  let v = 0, a = 0.53, f = 1;
+  for (let o = 0; o < oct; o++){ v += a*vnoise(x*f, y*f, z); a *= 0.5; f *= 2.03; }
+  return v;
+};
+
+const segDist = (px, py, ax, ay, bx, by) => {
+  const dx = bx - ax, dy = by - ay;
+  const t = clamp01(((px-ax)*dx + (py-ay)*dy) / (dx*dx + dy*dy || 1));
+  const qx = ax + dx*t - px, qy = ay + dy*t - py;
+  return Math.sqrt(qx*qx + qy*qy);
+};
+
+// stamp a line segment into a buffer (torus wrap, max-composited)
+function stampSeg(buf, x0, y0, x1, y1, v){
+  const steps = Math.max(1, (Math.max(Math.abs(x1-x0), Math.abs(y1-y0)) | 0) + 1);
+  for (let s = 0; s <= steps; s++){
+    const xi = ((((x0 + (x1-x0)*s/steps) | 0) % W) + W) % W;
+    const yi = ((((y0 + (y1-y0)*s/steps) | 0) % H) + H) % H;
+    const i = yi*W + xi;
+    if (v > buf[i]) buf[i] = v;
+  }
+}
+
+/* --------------------------------------------------------------- the pieces
+   Each piece writes a continuous field [0,1]; step() advances time, and an
+   optional draw() paints the field once per frame. The dither does the rest. */
+
+// The Presence — a breathing metaball entity: orbiting mass, a faint halo,
+// and every few seconds a pseudopod reaching out, like something testing its cage.
+function presenceSim(){
+  let t, orbs, seed;
+  return { name: 'The Presence', tag: 'a breathing entity — orbiting mass, a halo, a reaching limb', heavy: true,
+    reset(){
+      t = 0; seed = rnd()*100;
+      orbs = Array.from({ length: 6 }, () => ({
+        or: 0.17 + rnd()*0.15, sp: (0.35 + rnd()*0.75) * (rnd() < 0.5 ? -1 : 1),
+        ph: rnd()*TAU, m: 0.0022 + rnd()*0.0030, ecc: 0.65 + rnd()*0.35 }));
+      field.fill(0);
+    },
+    step(){ t += 0.022; },
+    draw(){
+      const cx = W*0.5, cy = H*0.5, R = Math.min(W, H);
+      const breathe = 1 + 0.10*Math.sin(t*1.9) + 0.04*Math.sin(t*3.1);
+      const reachA = fbm(t*0.13, seed, seed)*TAU*2.5;
+      const reach = Math.pow(0.5 + 0.5*Math.sin(t*0.7 + seed), 3);
+      for (let y = 0, i = 0; y < H; y++){
+        for (let x = 0; x < W; x++, i++){
+          const dx = (x-cx)/R, dy = (y-cy)/R;
+          const r = Math.sqrt(dx*dx + dy*dy), ang = Math.atan2(dy, dx);
+          let m = 0.0105*breathe/(dx*dx + dy*dy + 0.0045);          // the heart
+          for (const o of orbs){
+            const a = o.ph + t*o.sp;
+            const rx = dx - Math.cos(a)*o.or*breathe, ry = dy - Math.sin(a)*o.or*o.ecc*breathe;
+            m += o.m/(rx*rx + ry*ry + 0.0022);
+          }
+          let da = (ang - reachA) % TAU; if (da < -Math.PI) da += TAU; else if (da > Math.PI) da -= TAU;
+          m += reach * 0.9 * Math.exp(-da*da*7 - (r-0.34)*(r-0.34)*55); // the reaching limb
+          m += 0.55 * Math.exp(-Math.pow((r - 0.43 - 0.015*Math.sin(t*1.9))*38, 2)); // the halo
+          field[i] = clamp01(m*0.5 - 0.06);
+        }
+      }
+    } };
+}
+
+// Ember Spirit — a humanoid skeleton stamped as heat sources into a classic
+// rising-fire buffer: a figure made of flame, swaying inside its own updraft.
+function emberSim(){
+  let t, heat, tmp;
+  return { name: 'Ember Spirit', tag: 'a figure made of fire, swaying inside its own updraft', heavy: true,
+    reset(){ t = rnd()*60; heat = new Float32Array(N); tmp = new Float32Array(N); field.fill(0); },
+    step(){
+      t += 0.05;
+      // — skeleton: front view, slow idle sway —
+      const u = H/100;
+      const cx = W*0.5 + Math.sin(t*0.6)*4*u, gy = H*0.94;
+      const hip = gy - 34*u, sho = hip - 22*u, hed = sho - 8*u;
+      const swayU = Math.sin(t*0.6 + 0.9)*3*u;                    // upper body lags the hips
+      const bones = [
+        [cx, hip, cx + swayU, sho, 1],                            // spine
+        [cx + swayU, hed + 2*u, cx + swayU, hed - 3*u, 1.15],     // head
+      ];
+      for (const s of [-1, 1]){
+        const aA = Math.sin(t*0.8 + (s < 0 ? 0 : 2.4))*0.35 + 0.55;
+        const ex = cx + swayU + s*Math.sin(aA)*13*u, ey = sho + Math.cos(aA)*13*u;
+        bones.push([cx + swayU + s*3*u, sho, ex, ey, 0.9]);       // upper arm
+        bones.push([ex, ey, ex + s*4*u, ey - Math.sin(t*1.7 + s)*6*u, 0.9]); // drifting forearm
+        bones.push([cx, hip, cx + s*6*u, gy - 16*u, 0.95]);       // thigh
+        bones.push([cx + s*6*u, gy - 16*u, cx + s*7*u, gy, 0.95]); // shin
+      }
+      // — deposit flickering heat along the bones —
+      for (const [x0, y0, x1, y1, v] of bones){
+        const steps = (Math.max(Math.abs(x1-x0), Math.abs(y1-y0)) | 0) + 1;
+        for (let s = 0; s <= steps; s++){
+          const xi = (x0 + (x1-x0)*s/steps + (rnd()-0.5)*2.2) | 0;
+          const yi = (y0 + (y1-y0)*s/steps + (rnd()-0.5)*2.2) | 0;
+          if (xi >= 0 && xi < W && yi >= 0 && yi < H){
+            const i = yi*W + xi, nv = v*(0.75 + rnd()*0.45);
+            if (nv > heat[i]) heat[i] = Math.min(1.35, nv);
+          }
+        }
+      }
+      // — flames rise with turbulence, cool as they go —
+      for (let y = 0; y < H; y++){
+        const y1 = Math.min(H-1, y+1)*W, y2 = Math.min(H-1, y+2)*W;
+        for (let x = 0; x < W; x++){
+          const xo = x + Math.round((vnoise(x*0.13, y*0.09, t*1.6) - 0.5)*2.6);
+          const xc = ((xo % W) + W) % W, xl = (xc-1+W) % W, xr = (xc+1) % W;
+          const v = (heat[y1+xl] + heat[y1+xc]*2 + heat[y1+xr] + heat[y2+xc])*0.19;
+          tmp[y*W + x] = Math.max(v, heat[y*W + x]*0.72);
+        }
+      }
+      const sw = heat; heat = tmp; tmp = sw;
+      for (let i = 0; i < N; i++) field[i] = clamp01(heat[i]);
+    } };
+}
+
+// The Walker — a ghost figure crossing the frame in an endless procedural gait,
+// rendered as a soft distance field around its skeleton, afterimages trailing.
+function walkerSim(){
+  let t, px;
+  return { name: 'The Walker', tag: 'a ghost mid-stride, dissolving and reforming as it goes', heavy: true,
+    reset(){ t = rnd()*10; px = -20; field.fill(0); },
+    step(){ t += 0.055; px += 0.5; if (px > W + 24) px = -24; },
+    draw(){
+      const u = H/100, gy = H*0.86;
+      const bob = Math.abs(Math.sin(t))*2.2*u;
+      const cx = px, hipY = gy - 32*u - bob, shoY = hipY - 22*u, lean = 2.5*u;
+      const segs = [
+        [cx, hipY, cx + lean, shoY, 3.2*u],                            // torso
+        [cx + lean, shoY - 2*u, cx + lean + 1.2*u, shoY - 8*u, 4.0*u], // head
+      ];
+      for (const s of [0, Math.PI]){
+        const p = t + s;
+        const swing = Math.sin(p)*0.62;
+        const bend = Math.max(0, Math.sin(p - 0.9))*1.05 + 0.08;
+        const kx = cx + Math.sin(swing)*16*u, ky = hipY + Math.cos(swing)*16*u;
+        const a2 = swing - bend;
+        const fx = kx + Math.sin(a2)*16*u, fy = Math.min(ky + Math.cos(a2)*16*u, gy);
+        segs.push([cx, hipY, kx, ky, 2.6*u], [kx, ky, fx, fy, 2.2*u]);
+        const aA = Math.sin(p + Math.PI)*0.55;
+        const ex = cx + lean + Math.sin(aA)*11*u, ey = shoY + Math.cos(aA)*11*u;
+        const aF = aA + 0.45 + 0.25*Math.sin(p + Math.PI);
+        segs.push([cx + lean, shoY, ex, ey, 2.0*u],
+                  [ex, ey, ex + Math.sin(aF)*10*u, ey + Math.cos(aF)*10*u, 1.8*u]);
+      }
+      for (let i = 0; i < N; i++) field[i] *= 0.84;                    // afterimages
+      let x0 = W, x1 = 0, y0 = H, y1 = 0;
+      for (const g of segs){
+        x0 = Math.min(x0, g[0], g[2]); x1 = Math.max(x1, g[0], g[2]);
+        y0 = Math.min(y0, g[1], g[3]); y1 = Math.max(y1, g[1], g[3]);
+      }
+      const pad = 6*u;
+      x0 = Math.max(0, (x0 - pad) | 0); x1 = Math.min(W - 1, (x1 + pad) | 0);
+      y0 = Math.max(0, (y0 - pad) | 0); y1 = Math.min(H - 1, (y1 + pad) | 0);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++){
+        let v = 0;
+        for (const g of segs){
+          const sv = 1.25 - segDist(x, y, g[0], g[1], g[2], g[3]) / g[4];
+          if (sv > v) v = sv;
+        }
+        if (v > 0){
+          v = clamp01(v)*(0.9 + 0.2*vnoise(x*0.35, y*0.35, t*2));      // spectral shimmer
+          const i = y*W + x;
+          if (v > field[i]) field[i] = clamp01(v);
+        }
+      }
+      const gi = (gy | 0)*W;                                            // faint dotted ground
+      for (let x = 0; x < W; x++)
+        if (x % 7 === 0) field[gi + x] = Math.max(field[gi + x], 0.45 + 0.15*Math.sin(t*3 + x));
+    } };
+}
+
+// The Dancer — a front-lit figure whose hands write ribbons of light that
+// linger long after the gesture has moved on.
+function dancerSim(){
+  let t, trail, prevL, prevR, segs;
+  return { name: 'The Dancer', tag: 'hands writing ribbons of light that outlive each gesture', heavy: true,
+    reset(){ t = rnd()*10; trail = new Float32Array(N); prevL = prevR = null; segs = []; field.fill(0); },
+    step(){
+      t += 0.045;
+      for (let i = 0; i < N; i++) trail[i] *= 0.950;
+      const u = H/100;
+      const cx = W*0.5 + Math.sin(t*0.7)*7*u, gy = H*0.92;
+      const plie = (0.5 + 0.5*Math.sin(t*1.4))*3*u;
+      const hip = gy - 30*u + plie, sho = hip - 20*u;
+      const tilt = Math.sin(t*0.7 + 0.8)*4*u;
+      segs = [
+        [cx, hip, cx + tilt, sho, 2.8*u],
+        [cx + tilt, sho - 1*u, cx + tilt + Math.sin(t*0.9)*1.5*u, sho - 7*u, 3.4*u],
+      ];
+      const hands = [];
+      for (const s of [-1, 1]){
+        segs.push([cx, hip, cx + s*(5 + plie)*u, gy - 14*u, 2.3*u],
+                  [cx + s*(5 + plie)*u, gy - 14*u, cx + s*7*u, gy, 1.9*u]);
+        const th = 1.35 + 1.15*Math.sin(t*1.1 + (s < 0 ? 0 : 1.3));
+        const ex = cx + tilt + s*Math.sin(th)*11*u, ey = sho + Math.cos(th)*11*u;
+        const th2 = th + 0.35 + 0.6*Math.sin(t*2.0 + s*1.7);
+        const hx = ex + s*Math.sin(th2)*10*u, hy = ey + Math.cos(th2)*10*u;
+        segs.push([cx + tilt, sho, ex, ey, 2.1*u], [ex, ey, hx, hy, 1.8*u]);
+        hands.push([hx, hy]);
+      }
+      if (prevL) stampSeg(trail, prevL[0], prevL[1], hands[0][0], hands[0][1], 1);
+      if (prevR) stampSeg(trail, prevR[0], prevR[1], hands[1][0], hands[1][1], 1);
+      prevL = hands[0]; prevR = hands[1];
+    },
+    draw(){
+      for (let i = 0; i < N; i++) field[i] = trail[i]*0.8;
+      let x0 = W, x1 = 0, y0 = H, y1 = 0;
+      for (const g of segs){
+        x0 = Math.min(x0, g[0], g[2]); x1 = Math.max(x1, g[0], g[2]);
+        y0 = Math.min(y0, g[1], g[3]); y1 = Math.max(y1, g[1], g[3]);
+      }
+      x0 = Math.max(0, (x0 - 5) | 0); x1 = Math.min(W - 1, (x1 + 5) | 0);
+      y0 = Math.max(0, (y0 - 5) | 0); y1 = Math.min(H - 1, (y1 + 5) | 0);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++){
+        let v = 0;
+        for (const g of segs){
+          const sv = 1.25 - segDist(x, y, g[0], g[1], g[2], g[3]) / g[4];
+          if (sv > v) v = sv;
+        }
+        if (v > 0){
+          const i = y*W + x, fv = clamp01(v)*0.95;
+          if (fv > field[i]) field[i] = fv;
+        }
+      }
+    } };
+}
+
+// Rolling Swell — directional wave trains in perspective; crests sharpen,
+// pass through each other, and break into dithered foam.
+function swellSim(){
+  let t;
+  return { name: 'Rolling Swell', tag: 'open water — crests sharpen, interfere, and break into foam',
+    reset(){ t = rnd()*100; field.fill(0); },
+    step(){ t += 0.030; },
+    draw(){
+      for (let y = 0, i = 0; y < H; y++){
+        const v0 = y/H;
+        const depth = 1/(0.16 + v0*1.05);            // horizon-compressed distance
+        for (let x = 0; x < W; x++, i++){
+          const px = x/W;
+          const warp = (vnoise(px*2.0 + t*0.10, depth*0.7, t*0.05) - 0.5)*1.3;
+          let h = 0.55*Math.sin((px*0.7 + depth*1.15)*TAU + t*1.25 + warp)
+                + 0.30*Math.sin((px*-0.45 + depth*0.8)*TAU + t*0.9 + warp*1.5)
+                + 0.15*Math.sin((px*1.3 + depth*2.3)*TAU + t*2.0);
+          h = Math.pow(clamp01(h*0.5 + 0.5), 3.2);
+          if (h > 0.68) h += (vnoise(x*1.1, y*1.1, t*2.5) - 0.35)*0.55;   // foam
+          field[i] = clamp01(h*(0.30 + 0.85*v0) + 0.02);
+        }
+      }
+    } };
+}
+
+// Rainpool — a real 2-D wave equation; every drop a circle, every circle a negotiation.
+function poolSim(){
+  let u, up, t;
+  return { name: 'Rainpool', tag: 'every drop a circle; every circle a negotiation',
+    reset(){ u = new Float32Array(N); up = new Float32Array(N); t = 0; field.fill(0); },
+    step(){
+      t++;
+      if (t % 26 === 0 || rnd() < 0.012){
+        const cx = (3 + rnd()*(W-6)) | 0, cy = (3 + rnd()*(H-6)) | 0, s = 1.2 + rnd()*1.8;
+        for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+          u[((cy+dy)%H)*W + ((cx+dx)%W)] -= s*Math.exp(-(dx*dx + dy*dy)*0.55);
+      }
+      const c2 = 0.30, damp = 0.984;
+      for (let y = 0; y < H; y++){
+        const yu = ((y-1+H)%H)*W, yd = ((y+1)%H)*W, yc = y*W;
+        for (let x = 0; x < W; x++){
+          const xl = (x-1+W)%W, xr = (x+1)%W, i = yc + x;
+          const lap = u[yu+x] + u[yd+x] + u[yc+xl] + u[yc+xr] - 4*u[i];
+          up[i] = (2*u[i] - up[i] + c2*lap)*damp;
+        }
+      }
+      const sw = u; u = up; up = sw;
+      for (let i = 0; i < N; i++){                                          // rings on dark water
+        const v = Math.abs(u[i])*1.7; field[i] = v < 0.07 ? 0 : clamp01(v);
+      }
+    } };
+}
+
+// Aurora — domain-warped fbm combed into curtains that fall from the top of the sky.
+function auroraSim(){
+  let t, seed;
+  return { name: 'Aurora', tag: 'solar wind combed into curtains of slow fire', heavy: true,
+    reset(){ t = rnd()*50; seed = rnd()*100; field.fill(0); },
+    step(){ t += 0.016; },
+    draw(){
+      for (let y = 0, i = 0; y < H; y++){
+        const py = y/H;
+        for (let x = 0; x < W; x++, i++){
+          const px = x/W;
+          const q = fbm(px*2.1 + t*0.35, py*1.1, seed, 3);
+          const w = fbm(px*3.3 - t*0.22, py*0.7 + q*1.5, seed + 31, 3);
+          const band = Math.pow(0.5 + 0.5*Math.sin((px*2.4 + q*2.6 + w*1.4)*TAU), 3.2);
+          const fall = smooth(0.95, 0.10, py)*(0.35 + 0.85*w);
+          const star = (py > 0.5 || vnoise(x*7.3, y*7.3, seed) < 0.985)
+            ? 0 : 0.3 + 0.25*Math.sin(t*6 + x*3);
+          field[i] = clamp01(band*fall*1.5 + star);
+        }
+      }
+    } };
+}
+
+// Mandala — noise folded k ways until chaos remembers symmetry; the heart pulses,
+// the rings breathe inward.
+function mandalaSim(){
+  let t, k, seed;
+  return { name: 'Mandala', tag: 'noise folded k ways until chaos remembers symmetry', heavy: true,
+    reset(){ t = rnd()*50; k = 5 + ((rnd()*5) | 0); seed = rnd()*100; field.fill(0); },
+    step(){ t += 0.014; },
+    draw(){
+      const cx = W/2, cy = H/2, R = Math.min(W, H)*0.52;
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++){
+        const dx = (x-cx)/R, dy = (y-cy)/R;
+        const r = Math.sqrt(dx*dx + dy*dy);
+        let a = Math.atan2(dy, dx) + t*0.35;
+        a = Math.abs((((a*k/TAU) % 1) + 1) % 1 - 0.5)*2;          // fold into a sector
+        const n = fbm(r*2.6 - t*0.5, a*2.2, seed, 3);
+        const rings = 0.5 + 0.5*Math.sin(r*26 - t*1.6 + n*7);
+        const petal = Math.pow(1 - a, 0.6);
+        const v = (n*0.55 + rings*0.45)*petal*smooth(1.02, 0.72, r)*smooth(0.0, 0.12, r)
+                + Math.exp(-r*r*42)*(0.7 + 0.3*Math.sin(t*2.2));   // pulsing heart
+        field[i] = clamp01(v*1.15 - 0.08);
+      }
+    } };
+}
+
+// Physarum — thousands of agents sense a trail ahead, steer toward it, and deposit more,
+// which diffuses and decays. Self-organizes into transport networks (the "intelligent" one).
+function physarumSim(name, { sensAng = 0.5, turn = 0.42, sensDist = 4, speed = 0.85, deposit = 0.24, decay = 0.9 } = {}){
+  let ax, ay, ah, nA, trail, tmp;
+  const sample = (x, y) => trail[(((y|0)%H+H)%H)*W + (((x|0)%W+W)%W)];
+  return { name, heavy: true, reset(){
+      nA = Math.min(4200, (N*0.16)|0);
+      ax = new Float32Array(nA); ay = new Float32Array(nA); ah = new Float32Array(nA);
+      for (let i = 0; i < nA; i++){ ax[i] = rnd()*W; ay[i] = rnd()*H; ah[i] = rnd()*TAU; }
+      trail = new Float32Array(N); tmp = new Float32Array(N); field.fill(0);
+    }, step(){
+      for (let i = 0; i < nA; i++){
+        const h = ah[i], x = ax[i], y = ay[i];
+        const cC = sample(x+Math.cos(h)*sensDist, y+Math.sin(h)*sensDist);
+        const cL = sample(x+Math.cos(h-sensAng)*sensDist, y+Math.sin(h-sensAng)*sensDist);
+        const cR = sample(x+Math.cos(h+sensAng)*sensDist, y+Math.sin(h+sensAng)*sensDist);
+        let nh = h;
+        if (cC >= cL && cC >= cR) nh = h;
+        else if (cL > cR) nh = h - turn;
+        else if (cR > cL) nh = h + turn;
+        else nh = h + (rnd()-0.5)*turn*2;
+        let nx = (ax[i] + Math.cos(nh)*speed) % W; if (nx < 0) nx += W;
+        let ny = (ay[i] + Math.sin(nh)*speed) % H; if (ny < 0) ny += H;
+        ax[i] = nx; ay[i] = ny; ah[i] = nh;
+        const idx = ((ny|0)*W) + (nx|0); trail[idx] = Math.min(1, trail[idx] + deposit);
+      }
+      for (let y = 0; y < H; y++){
+        const yu = ((y-1+H)%H)*W, yd = ((y+1)%H)*W, yc = y*W;
+        for (let x = 0; x < W; x++){
+          const xl = (x-1+W)%W, xr = (x+1)%W;
+          const s = trail[yu+xl]+trail[yu+x]+trail[yu+xr]+trail[yc+xl]+trail[yc+x]+trail[yc+xr]+trail[yd+xl]+trail[yd+x]+trail[yd+xr];
+          tmp[yc+x] = (s/9)*decay;
+        }
+      }
+      const t = trail; trail = tmp; tmp = t;
+      for (let i = 0; i < N; i++){ const v = trail[i]*1.7; field[i] = v > 1 ? 1 : v; }
+    } };
+}
+
+// Murmuration — a flock under pursuit. A falcon chases the flock's heart;
+// the flock answers with the pulsing, folding shapes starlings make at dusk.
+function murmurationSim(){
+  const MAX = 1.35, MIN = 0.55;
+  let bx, by, vx, vy, nB, trail, fx, fy, fvx, fvy;
+  return { name: 'Murmuration', tag: 'a falcon and a thousand small decisions pretending to be one mind', heavy: true,
+    reset(){
+      nB = Math.min(190, (N/56) | 0);
+      bx = new Float32Array(nB); by = new Float32Array(nB); vx = new Float32Array(nB); vy = new Float32Array(nB);
+      for (let i = 0; i < nB; i++){
+        bx[i] = rnd()*W; by[i] = rnd()*H;
+        const a = rnd()*TAU; vx[i] = Math.cos(a); vy[i] = Math.sin(a);
+      }
+      fx = rnd()*W; fy = rnd()*H; fvx = fvy = 0;
+      trail = new Float32Array(N); field.fill(0);
+    },
+    step(){
+      let mx = 0, my = 0;
+      for (let i = 0; i < nB; i++){ mx += bx[i]; my += by[i]; }
+      mx /= nB; my /= nB;
+      let dx = mx - fx, dy = my - fy;                     // falcon hunts the heart
+      if (dx > W/2) dx -= W; else if (dx < -W/2) dx += W;
+      if (dy > H/2) dy -= H; else if (dy < -H/2) dy += H;
+      const fd = Math.hypot(dx, dy) || 1;
+      fvx += dx/fd*0.09; fvy += dy/fd*0.09;
+      const fs = Math.hypot(fvx, fvy) || 1;
+      if (fs > MAX*1.18){ fvx = fvx/fs*MAX*1.18; fvy = fvy/fs*MAX*1.18; }
+      fx = (fx + fvx + W) % W; fy = (fy + fvy + H) % H;
+      const R2 = 90, F2 = 230;
+      for (let i = 0; i < nB; i++){
+        let ax = 0, ay = 0, cxs = 0, cys = 0, sx = 0, sy = 0, cnt = 0;
+        for (let j = 0; j < nB; j++){
+          if (i === j) continue;
+          let ddx = bx[j]-bx[i], ddy = by[j]-by[i];
+          if (ddx > W/2) ddx -= W; else if (ddx < -W/2) ddx += W;
+          if (ddy > H/2) ddy -= H; else if (ddy < -H/2) ddy += H;
+          const d2 = ddx*ddx + ddy*ddy;
+          if (d2 < R2 && d2 > 0){ cnt++; ax += vx[j]; ay += vy[j]; cxs += ddx; cys += ddy; sx -= ddx/d2; sy -= ddy/d2; }
+        }
+        if (cnt){ vx[i] += (ax/cnt)*0.06 + (cxs/cnt)*0.02 + sx*0.55; vy[i] += (ay/cnt)*0.06 + (cys/cnt)*0.02 + sy*0.55; }
+        let gdx = mx - bx[i], gdy = my - by[i];           // the flock holds together
+        if (gdx > W/2) gdx -= W; else if (gdx < -W/2) gdx += W;
+        if (gdy > H/2) gdy -= H; else if (gdy < -H/2) gdy += H;
+        vx[i] += gdx*0.0045; vy[i] += gdy*0.0045;
+        let fdx = bx[i]-fx, fdy = by[i]-fy;               // flee the falcon
+        if (fdx > W/2) fdx -= W; else if (fdx < -W/2) fdx += W;
+        if (fdy > H/2) fdy -= H; else if (fdy < -H/2) fdy += H;
+        const df2 = fdx*fdx + fdy*fdy;
+        if (df2 < F2 && df2 > 0){ vx[i] += fdx/df2*7; vy[i] += fdy/df2*7; }
+        const sp = Math.hypot(vx[i], vy[i]) || 1;
+        if (sp > MAX){ vx[i] = vx[i]/sp*MAX; vy[i] = vy[i]/sp*MAX; }
+        else if (sp < MIN){ vx[i] = vx[i]/sp*MIN; vy[i] = vy[i]/sp*MIN; }
+        bx[i] = (bx[i]+vx[i]+W)%W; by[i] = (by[i]+vy[i]+H)%H;
+      }
+      for (let i = 0; i < N; i++) trail[i] *= 0.78;
+      for (let i = 0; i < nB; i++){
+        const xi = bx[i] | 0, yi = by[i] | 0, idx = yi*W + xi;
+        trail[idx] = 1;
+        const idx2 = yi*W + ((xi + 1) % W);               // soft 2px birds
+        if (trail[idx2] < 0.5) trail[idx2] = 0.5;
+      }
+      trail[((fy | 0)%H)*W + ((fx | 0)%W)] = 1;           // the falcon burns brightest
+      field.set(trail);
+    } };
+}
+
+// Storm Veins — charge gathers in the dark; branching bolts find a path down,
+// bloom, flash the whole sky, and fade. Rain falls in between.
+function stormSim(){
+  let glow, tmp, t, nextStrike, flash, seed, rX, rY;
+  const bolt = (x0, y0, drift, life, bright) => {
+    let x = x0, y = y0, d = drift;
+    while (y < H*0.9 && life-- > 0){
+      const i = (y | 0)*W + (((x | 0) % W) + W) % W;
+      if (bright > glow[i]) glow[i] = bright;
+      y += 0.55 + rnd()*0.5;
+      d = (d + (rnd()-0.5)*0.55)*0.94;
+      x += d;
+      if (rnd() < 0.035) bolt(x, y, d + (rnd()-0.5)*2.2, life*0.45, bright*0.62);
+    }
+  };
+  return { name: 'Storm Veins', tag: 'charge gathers in the dark until the sky finds a path down',
+    reset(){
+      glow = new Float32Array(N); tmp = new Float32Array(N);
+      t = 0; nextStrike = 20 + rnd()*40; flash = 0; seed = rnd()*100;
+      rX = new Float32Array(70); rY = new Float32Array(70);
+      for (let d = 0; d < 70; d++){ rX[d] = rnd()*W; rY[d] = rnd()*H; }
+      field.fill(0);
+    },
+    step(){
+      t++;
+      flash *= 0.55;
+      if (t >= nextStrike){
+        nextStrike = t + 18 + rnd()*85;
+        const n = rnd() < 0.3 ? 2 : 1;
+        for (let s = 0; s < n; s++) bolt(rnd()*W, 0, (rnd()-0.5)*1.2, H*2.2, 1.35);
+        flash = 0.30 + rnd()*0.2;
+      }
+      for (let y = 0; y < H; y++){                      // bloom: blur + decay the glow
+        const yu = ((y-1+H)%H)*W, yd = ((y+1)%H)*W, yc = y*W;
+        for (let x = 0; x < W; x++){
+          const xl = (x-1+W)%W, xr = (x+1)%W;
+          const s = glow[yu+x] + glow[yd+x] + glow[yc+xl] + glow[yc+xr];
+          tmp[yc+x] = Math.max(glow[yc+x]*0.88, s*0.205);
+        }
+      }
+      const sw = glow; glow = tmp; tmp = sw;
+      const cloudY = H*0.16;
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++){
+        const cloud = y < cloudY
+          ? Math.max(0, (fbm(x*0.05 + t*0.008, y*0.09, seed, 2) - 0.25))*smooth(cloudY, 0, y)*0.7 : 0;
+        field[i] = clamp01(glow[i] + flash + cloud);
+      }
+      const wind = Math.sin(t*0.01)*0.4;
+      for (let d = 0; d < 70; d++){
+        rY[d] += 1.5 + (d % 5)*0.12; rX[d] += wind;
+        if (rY[d] >= H){ rY[d] -= H; rX[d] = rnd()*W; }
+        const i = (rY[d] | 0)*W + (((rX[d] | 0) % W) + W) % W;
+        if (field[i] < 0.2) field[i] = 0.2;
+      }
+    } };
+}
+
+// Totality — the eclipsed sun: a black disc wearing a rotating crown of
+// streamers, a thin blazing limb, and a slow prominence crawling the edge.
+function totalitySim(){
+  let t, seed;
+  return { name: 'Totality', tag: 'the eclipsed sun — a black disc wearing a crown of streamers', heavy: true,
+    reset(){ t = rnd()*50; seed = rnd()*100; field.fill(0); },
+    step(){ t += 0.02; },
+    draw(){
+      const cx = W/2, cy = H/2, R = Math.min(W, H), R0 = 0.20;
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++){
+        const dx = (x-cx)/R, dy = (y-cy)/R;
+        const r = Math.sqrt(dx*dx + dy*dy), a = Math.atan2(dy, dx);
+        if (r < R0 - 0.006){ field[i] = 0; continue; }          // the moon
+        const n = fbm(Math.cos(a)*1.55 + seed, Math.sin(a)*1.55 + t*0.35, seed, 3);
+        const ray = Math.pow(n, 3.4)*3.2;
+        const spread = 0.09 + n*0.30;                            // streamer length varies
+        const cor = ray*Math.exp(-(r - R0)/spread);
+        const limb = Math.exp(-Math.pow((r - R0)*46, 2))*(0.75 + 0.25*Math.sin(a*3 + t*2));
+        const prom = Math.exp(-Math.pow((r - R0 - 0.012)*34, 2))
+                   * Math.pow(0.5 + 0.5*Math.sin(a*2 + t*0.8 + seed), 12)*1.4;
+        field[i] = clamp01(cor + limb*0.55 + prom);
+      }
+    } };
+}
+
+// Singularity — matter spirals into a tilted accretion disk, crosses the
+// horizon, and screams back out along the polar jets.
+function singularitySim(){
+  let pr, pa, pm, jl, nP, trail, t;
+  return { name: 'Singularity', tag: 'matter spirals in, screams down the jets, and returns',
+    reset(){
+      t = 0; nP = Math.min(2100, (N*0.09) | 0);
+      pr = new Float32Array(nP); pa = new Float32Array(nP);
+      pm = new Uint8Array(nP);   // 0 = disk, 1 = jet up, 2 = jet down
+      jl = new Float32Array(nP);
+      for (let i = 0; i < nP; i++){ pr[i] = 0.10 + Math.pow(rnd(), 0.7)*0.42; pa[i] = rnd()*TAU; }
+      trail = new Float32Array(N); field.fill(0);
+    },
+    step(){
+      t += 0.02;
+      const cx = W/2, cy = H/2, R = Math.min(W, H);
+      for (let i = 0; i < nP; i++){
+        if (pm[i] === 0){
+          pa[i] += 0.016/(pr[i] + 0.05);
+          pr[i] -= 0.00022/(pr[i] + 0.03);
+          if (pr[i] < 0.045){
+            if (rnd() < 0.45){ pm[i] = rnd() < 0.5 ? 1 : 2; jl[i] = 0.05; pa[i] = (rnd()-0.5)*0.5; } // pa becomes jet spread
+            else { pr[i] = 0.42 + rnd()*0.10; pa[i] = rnd()*TAU; }
+            continue;
+          }
+          const x = cx + Math.cos(pa[i])*pr[i]*R, y = cy + Math.sin(pa[i])*pr[i]*R*0.40; // tilted disk
+          const idx = ((((y | 0) % H) + H) % H)*W + ((((x | 0) % W) + W) % W);
+          trail[idx] = Math.min(1, trail[idx] + 0.22);
+        } else {
+          jl[i] += 0.012 + jl[i]*0.05;
+          if (jl[i] > 0.62){ pm[i] = 0; pr[i] = 0.40 + rnd()*0.12; pa[i] = rnd()*TAU; continue; }
+          const dir = pm[i] === 1 ? -1 : 1;
+          const x = (cx + pa[i]*R*jl[i]*1.4 + Math.sin(t*3 + i)*0.6) | 0;
+          const y = (cy + dir*jl[i]*R) | 0;
+          if (x >= 0 && x < W && y >= 0 && y < H) trail[y*W + x] = Math.min(1, trail[y*W + x] + 0.7);
+        }
+      }
+      for (let i = 0; i < N; i++) trail[i] *= 0.86;
+    },
+    draw(){
+      const cx = W/2, cy = H/2, R = Math.min(W, H);
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++){
+        const dx = (x-cx)/R, dy = (y-cy)/R;
+        const r2 = dx*dx + dy*dy;
+        const core = 0.0016/(r2 + 0.0012);               // event-horizon glare
+        field[i] = clamp01(trail[i] + core + (r2 < 0.0009 ? -1.5 : 0)); // black pupil
+      }
+    } };
+}
+
+// Galactea — stars on differential-rotation orbits shining through a fixed
+// two-armed density wave: the spiral is architecture, the stars just pass through.
+function galaxySim(){
+  let pr, pa, nP, trail, t;
+  return { name: 'Galactea', tag: 'a density wave turning passing stars into architecture',
+    reset(){
+      t = 0; nP = Math.min(3800, (N*0.16) | 0);
+      pr = new Float32Array(nP); pa = new Float32Array(nP);
+      for (let i = 0; i < nP; i++){ pr[i] = 0.05 + Math.pow(rnd(), 1.4)*0.62; pa[i] = rnd()*TAU; }
+      trail = new Float32Array(N); field.fill(0);
+    },
+    step(){
+      t++;
+      const cx = W/2, cy = H/2, R = Math.min(W, H)*0.72;
+      for (let i = 0; i < nP; i++){
+        pa[i] += 0.011/(pr[i] + 0.10);
+        const arm = 0.5 + 0.5*Math.cos(2*pa[i] + Math.log(pr[i] + 0.06)*5.5 - t*0.002);
+        const arm2 = arm*arm;
+        const x = cx + Math.cos(pa[i])*pr[i]*R, y = cy + Math.sin(pa[i])*pr[i]*R*0.82;
+        const idx = ((((y | 0) % H) + H) % H)*W + ((((x | 0) % W) + W) % W);
+        trail[idx] = Math.min(1, trail[idx] + 0.045 + 0.4*arm2*arm2);
+      }
+      for (let i = 0; i < N; i++) trail[i] *= 0.89;
+    },
+    draw(){
+      const cx = W/2, cy = H/2, R = Math.min(W, H);
+      for (let y = 0, i = 0; y < H; y++) for (let x = 0; x < W; x++, i++){
+        const dx = (x-cx)/R, dy = (y-cy)/R*1.2;
+        field[i] = clamp01(trail[i] + 0.007/(dx*dx + dy*dy + 0.005));   // central bulge
+      }
+    } };
+}
+
+// Strange Attractor — a de Jong orbit, its four parameters dreaming slowly;
+// the chaos never repeats and never leaves.
+function attractorSim(){
+  let a, b, c, d, x, y, t, trail;
+  return { name: 'Strange Attractor', tag: 'four numbers dreaming — never repeating, never leaving',
+    reset(){
+      const P = () => (1.1 + rnd()*1.7)*(rnd() < 0.5 ? -1 : 1);
+      a = P(); b = P(); c = P(); d = P();
+      x = 0.1; y = 0.1; t = 0; trail = new Float32Array(N); field.fill(0);
+    },
+    step(){
+      t += 0.003;
+      const aa = a + Math.sin(t*1.7)*0.12, bb = b + Math.sin(t*1.3 + 2)*0.12,
+            cc = c + Math.sin(t*2.3 + 4)*0.12, dd = d + Math.sin(t*0.9 + 1)*0.12;
+      const sx = W/4.4, sy = H/4.4, ox = W/2, oy = H/2;
+      for (let k = 0; k < 3200; k++){
+        const nx = Math.sin(aa*y) - Math.cos(bb*x);
+        const ny = Math.sin(cc*x) - Math.cos(dd*y);
+        x = nx; y = ny;
+        const i = ((ny*sy + oy) | 0)*W + ((nx*sx + ox) | 0);
+        trail[i] = Math.min(1, trail[i] + 0.06);
+      }
+      for (let i = 0; i < N; i++){ trail[i] *= 0.955; field[i] = trail[i] < 0.02 ? 0 : Math.min(1, trail[i]*1.6); }
+    } };
+}
+
+// Pendulum Choir — seven double pendulums released in near-unison; sensitive
+// dependence pulls the voices apart one by one.
+function pendulumSim(){
+  let th1, th2, w1, w2, trail;
+  const nP = 7;
+  return { name: 'Pendulum Choir', tag: 'seven voices start in unison; chaos gives each its own song',
+    reset(){
+      th1 = []; th2 = []; w1 = []; w2 = [];
+      const base = Math.PI*(0.55 + rnd()*0.4), base2 = Math.PI*(0.7 + rnd()*0.5);
+      for (let i = 0; i < nP; i++){ th1.push(base + i*0.004); th2.push(base2); w1.push(0); w2.push(0); }
+      trail = new Float32Array(N); field.fill(0);
+    },
+    step(){
+      const g = 1, dt = 0.022, cx = W/2, cy = H*0.38, L = H*0.26;
+      for (let i = 0; i < N; i++) trail[i] *= 0.90;
+      for (let p = 0; p < nP; p++){
+        for (let s = 0; s < 6; s++){
+          const d = th1[p] - th2[p], cd = Math.cos(d), sd = Math.sin(d);
+          const den = 3 - Math.cos(2*d);
+          const a1 = (-g*(3*Math.sin(th1[p]) + Math.sin(th1[p] - 2*th2[p])) - 2*sd*(w2[p]*w2[p] + w1[p]*w1[p]*cd))/den;
+          const a2 = (2*sd*(2*w1[p]*w1[p] + 2*g*Math.cos(th1[p]) + w2[p]*w2[p]*cd))/den;
+          w1[p] = (w1[p] + a1*dt)*0.99995; w2[p] = (w2[p] + a2*dt)*0.99995;
+          th1[p] += w1[p]*dt; th2[p] += w2[p]*dt;
+        }
+        const x1 = cx + Math.sin(th1[p])*L, y1 = cy + Math.cos(th1[p])*L;
+        const x2 = x1 + Math.sin(th2[p])*L, y2 = y1 + Math.cos(th2[p])*L;
+        stampSeg(trail, cx, cy, x1, y1, 0.42);
+        stampSeg(trail, x1, y1, x2, y2, 0.55);
+        stampSeg(trail, x2, y2, x2, y2, 1);              // the singing tip
+      }
+      field.set(trail);
+      field[((cy | 0))*W + (cx | 0)] = 1;                // the shared pivot
+    } };
+}
+
+const SIMS = [
+  presenceSim(),
+  emberSim(),
+  walkerSim(),
+  dancerSim(),
+  swellSim(),
+  poolSim(),
+  auroraSim(),
+  stormSim(),
+  totalitySim(),
+  singularitySim(),
+  galaxySim(),
+  attractorSim(),
+  pendulumSim(),
+  mandalaSim(),
+  Object.assign(physarumSim('Mycelium'), { tag: 'a headless intelligence rediscovering the shortest path' }),
+  murmurationSim(),
+];
+
+/* ------------------------------------------------------------------ engine */
+
+let ink = { r:0x7e, g:0xe7, b:0x87 };
+let speed = 1, cellPx = 5, playing = true, acc = 0;
+let idx = 0, sim = SIMS[0];
+let auto = false, autoAt = 0;
+let imgData;
+
+const hexToRgb = hex => { const n = parseInt(hex.slice(1),16); return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 }; };
+
+function resize(){
+  const disp = canvas.clientWidth || 500;
+  W = H = Math.max(24, Math.round(disp / cellPx));
+  N = W*H;
+  canvas.width = W; canvas.height = H;
+  field = new Float32Array(N);
+  imgData = ctx.createImageData(W, H);
+  sim.reset();
+  if (sim.draw) sim.draw();
+}
+
+function render(){
+  const data = imgData.data;
+  for (let y = 0, p = 0; y < H; y++){
+    const row = (y & 3) * 4;
+    for (let x = 0; x < W; x++, p += 4){
+      const threshold = (BAYER[row + (x & 3)] + 0.5) / 16;
+      if (field[p >> 2] > threshold){ data[p] = ink.r; data[p+1] = ink.g; data[p+2] = ink.b; }
+      else { data[p] = 0; data[p+1] = 0; data[p+2] = 0; }
+      data[p+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function loop(ts){
+  if (playing){
+    acc += speed;
+    const capSteps = sim.heavy ? 3 : 8;
+    let g = 0;
+    while (acc >= 1 && g < capSteps){ sim.step(); acc--; g++; }
+    if (acc > capSteps) acc = 0;
+    if (sim.draw) sim.draw();
+  }
+  render();
+  if (auto && ts - autoAt > 6500){ autoAt = ts; setSim(idx + 1); }
+  requestAnimationFrame(loop);
+}
+
+// —— sim selection ——
+const simsEl = document.getElementById('sims');
+const chips = SIMS.map((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'schip'; b.textContent = s.name;
+  b.addEventListener('click', () => setSim(i));
+  simsEl.appendChild(b);
+  return b;
+});
+function setSim(i){
+  idx = (i + SIMS.length) % SIMS.length;
+  sim = SIMS[idx]; acc = 0; sim.reset();
+  if (sim.draw) sim.draw();
+  document.getElementById('sname').textContent = sim.name;
+  document.getElementById('stag').textContent = sim.tag || '';
+  document.getElementById('sidx').textContent = (idx + 1) + '/' + SIMS.length;
+  chips.forEach((c, k) => c.classList.toggle('on', k === idx));
+  chips[idx].scrollIntoView({ block: 'nearest' });
+  render();
+}
+
+// —— controls ——
+document.getElementById('ink').addEventListener('input', e => { ink = hexToRgb(e.target.value); render(); });
+document.getElementById('speed').addEventListener('input', e => speed = +e.target.value);
+document.getElementById('cell').addEventListener('input', e => { cellPx = +e.target.value; resize(); render(); });
+const playBtn = document.getElementById('play');
+playBtn.addEventListener('click', () => { playing = !playing; playBtn.textContent = playing ? '⏸ pause' : '▶ play'; });
+document.getElementById('reseed').addEventListener('click', () => { sim.reset(); if (sim.draw) sim.draw(); render(); });
+document.getElementById('prev').addEventListener('click', () => setSim(idx - 1));
+document.getElementById('next').addEventListener('click', () => setSim(idx + 1));
+document.getElementById('rand').addEventListener('click', () => setSim((Math.random()*SIMS.length)|0));
+const autoBtn = document.getElementById('auto');
+autoBtn.addEventListener('click', () => { auto = !auto; autoBtn.classList.toggle('on', auto); autoAt = performance.now(); });
+canvas.parentElement.addEventListener('click', () => { sim.reset(); if (sim.draw) sim.draw(); render(); });
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') setSim(idx + 1);
+  else if (e.key === 'ArrowLeft') setSim(idx - 1);
+  else if (e.key === ' '){ e.preventDefault(); playBtn.click(); }
+});
+addEventListener('resize', () => { resize(); render(); });
+
+if (matchMedia('(prefers-reduced-motion: reduce)').matches){ playing = false; playBtn.textContent = '▶ play'; }
+resize(); setSim(0); requestAnimationFrame(loop);
+</script>
+</body>
+</html>
