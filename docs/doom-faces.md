@@ -4,10 +4,15 @@
 states. It works when opened directly from disk: no build step, server, web font, CDN, or package
 install is required.
 
+The companion `gallery/doom-context.html` is a satirical animated chat visualization. It stages a
+seven-turn conversation, fills a fake 128K context meter, and uses the progressively bloodier face
+tiers as both agent telemetry and the per-turn loading animation.
+
 ## Open the viewer
 
 ```bash
 xdg-open gallery/doom-faces.html
+xdg-open gallery/doom-context.html
 ```
 
 Each card can be paused and exported as GIF89a. The face-plate control determines whether exports
@@ -51,6 +56,8 @@ data/doom-faces/assets/             Extracted PNGs and generated manifests
 gallery/doom-faces.html             Offline entry point
 gallery/doom-faces/app.js           Playback, compositing, and GIF encoder
 gallery/doom-faces/styles.css        Viewer presentation
+gallery/doom-context.html            Animated context-pressure demo
+gallery/doom-context/                Demo presentation and playback
 scripts/extract-doom-faces.mjs      Reproducible WAD extractor
 ```
 

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0b0a">
+  <title>Context Pressure Test — Doom Face Chat</title>
+  <link rel="stylesheet" href="doom-context/styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="doom-faces.html" aria-label="Return to Doom face archive">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Context Pressure Test</span>
+      </a>
+      <div class="header-note"><span class="live-dot"></span> Satire simulation</div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">A completely scientific visualization</p>
+        <h1>Every prompt<br><em>leaves a mark.</em></h1>
+        <p class="lede">Watch one innocent chat slowly squeeze an agent’s context window. Doomguy is the loader. His face is the telemetry.</p>
+      </section>
+
+      <section class="demo-frame" aria-label="Animated fake chat session">
+        <div class="window-bar">
+          <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span>session_07 / increasingly_small_request.chat</span>
+          <span class="window-status">Local simulation</span>
+        </div>
+
+        <div class="demo-layout">
+          <div class="chat-panel">
+            <div class="chat-toolbar">
+              <div>
+                <span class="toolbar-label">Active thread</span>
+                <strong>“Just one more thing…”</strong>
+              </div>
+              <button class="icon-button" id="clear-button" type="button" title="Restart simulation" aria-label="Restart simulation">↻</button>
+            </div>
+            <div class="messages" id="messages" aria-live="polite"></div>
+            <div class="composer" aria-hidden="true">
+              <span>Message the agent</span>
+              <kbd>↵</kbd>
+            </div>
+          </div>
+
+          <aside class="telemetry-panel" aria-label="Doom-style context status bar">
+            <div class="telemetry-topline">
+              <span>Context status interface // agent telemetry</span>
+              <span><i class="hud-live-dot"></i><b id="condition-code">NOMINAL</b></span>
+            </div>
+
+            <div class="hud-left">
+              <div class="condition-readout">
+                <span class="readout-label">Condition</span>
+                <strong id="condition-label">Fresh session</strong>
+                <span id="condition-note">Ready to overthink.</span>
+              </div>
+
+              <div class="context-block">
+                <div class="context-score">
+                  <span>Context HP</span>
+                  <strong id="context-big" class="three-digit">100%</strong>
+                </div>
+                <div class="context-meter-group">
+                  <div class="context-heading">
+                    <span>Window remaining</span>
+                    <strong id="token-readout">128K / 128K</strong>
+                  </div>
+                  <div class="meter-track" role="progressbar" aria-label="Simulated context remaining" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="context-meter">
+                    <div class="meter-fill" id="meter-fill"></div>
+                    <div class="meter-threshold threshold-a"></div>
+                    <div class="meter-threshold threshold-b"></div>
+                  </div>
+                  <div class="meter-scale"><span>0</span><span>64K</span><span>128K</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="face-monitor" id="face-monitor">
+              <div class="scanlines" aria-hidden="true"></div>
+              <canvas id="agent-face" width="35" height="31" aria-label="Doom face showing context pressure"></canvas>
+              <span class="monitor-corner corner-a"></span>
+              <span class="monitor-corner corner-b"></span>
+              <span class="monitor-corner corner-c"></span>
+              <span class="monitor-corner corner-d"></span>
+            </div>
+
+            <div class="hud-right">
+              <dl class="stats-grid">
+                <div><dt>Turns</dt><dd id="turn-count">00</dd></div>
+                <div><dt>Pressure</dt><dd id="pressure-readout">0%</dd></div>
+                <div><dt>Recall</dt><dd id="recall-readout">100%</dd></div>
+                <div><dt>Vibes</dt><dd id="vibes-readout">Stable</dd></div>
+              </dl>
+
+              <dl class="survival-grid">
+                <div><dt>Patience</dt><dd id="patience-readout">100</dd></div>
+                <div><dt>Tabs</dt><dd id="tabs-readout">03</dd></div>
+                <div><dt>Copium</dt><dd id="copium-readout">99</dd></div>
+                <div><dt>TODO</dt><dd id="todo-readout">01</dd></div>
+              </dl>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <div class="simulation-controls" aria-label="Simulation controls">
+        <div class="config-copy">
+          <span>Demo controls</span>
+          <small>Not real model telemetry. Doomguy has declined to comment.</small>
+        </div>
+        <div class="controls">
+          <button id="play-button" type="button"><span class="button-icon">Ⅱ</span><span class="button-copy">Pause</span></button>
+          <button id="advance-button" type="button">Add context <span>+16K</span></button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <span>Original Doom status-face sprites · 35 Hz playback</span>
+      <a href="doom-faces.html">Open the full face archive →</a>
+    </footer>
+  </div>
+
+  <script src="../data/doom-faces/assets/manifest.js"></script>
+  <script src="../data/doom-faces/animations.js"></script>
+  <script src="doom-context/app.js"></script>
+</body>
+</html>
