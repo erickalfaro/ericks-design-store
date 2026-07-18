@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a0b0a">
-  <title>Context Pressure Test — Doom Face Chat</title>
+  <title>Agent Doom — Context Exhausted</title>
   <link rel="stylesheet" href="doom-context/styles.css">
 </head>
 <body>
@@ -12,23 +12,23 @@
     <header class="site-header">
       <a class="brand" href="doom-faces.html" aria-label="Return to Doom face archive">
         <span class="brand-mark" aria-hidden="true"></span>
-        <span>Context Pressure Test</span>
+        <span>Agent Doom // Context Exhausted</span>
       </a>
-      <div class="header-note"><span class="live-dot"></span> Satire simulation</div>
+      <div class="header-note"><span class="live-dot"></span> Local satire</div>
     </header>
 
     <main>
       <section class="intro">
         <p class="eyebrow">A completely scientific visualization</p>
-        <h1>Every prompt<br><em>leaves a mark.</em></h1>
-        <p class="lede">Watch one innocent chat slowly squeeze an agent’s context window. Doomguy is the loader. His face is the telemetry.</p>
+        <h1>Every “quick<br>question”<br><em>leaves a mark.</em></h1>
+        <p class="lede">Watch one innocent chat slowly murder an agent’s context window. Doomguy is the loader. His face is the telemetry.</p>
       </section>
 
-      <section class="demo-frame" aria-label="Animated fake chat session">
+      <section class="demo-frame" aria-label="Animated fake agent disaster session">
         <div class="window-bar">
           <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <span>session_07 / increasingly_small_request.chat</span>
-          <span class="window-status">Local simulation</span>
+          <span>session_07 / one_last_quick_thing.chat</span>
+          <span class="window-status"></span>
         </div>
 
         <div class="demo-layout">
@@ -36,13 +36,13 @@
             <div class="chat-toolbar">
               <div>
                 <span class="toolbar-label">Active thread</span>
-                <strong>“Just one more thing…”</strong>
+                <strong>“Quick question…”</strong>
               </div>
               <button class="icon-button" id="clear-button" type="button" title="Restart simulation" aria-label="Restart simulation">↻</button>
             </div>
             <div class="messages" id="messages" aria-live="polite"></div>
             <div class="composer" aria-hidden="true">
-              <span>Message the agent</span>
+              <span>Ask one final tiny question…</span>
               <kbd>↵</kbd>
             </div>
           </div>
@@ -63,19 +63,19 @@
               <div class="context-block">
                 <div class="context-score">
                   <span>Context HP</span>
-                  <strong id="context-big" class="three-digit">100%</strong>
+                  <strong id="context-big">100%</strong>
                 </div>
                 <div class="context-meter-group">
-                  <div class="context-heading">
-                    <span>Window remaining</span>
-                    <strong id="token-readout">128K / 128K</strong>
+                  <div class="context-heading">Window remaining</div>
+                  <div class="meter-body">
+                    <strong id="token-readout" class="token-readout">1.0M / 1M</strong>
+                    <div class="meter-track" role="progressbar" aria-label="Simulated context remaining" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="context-meter">
+                      <div class="meter-fill" id="meter-fill"></div>
+                      <div class="meter-threshold threshold-a"></div>
+                      <div class="meter-threshold threshold-b"></div>
+                    </div>
+                    <div class="meter-scale"><span>0</span><span>500K</span><span>1M</span></div>
                   </div>
-                  <div class="meter-track" role="progressbar" aria-label="Simulated context remaining" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="context-meter">
-                    <div class="meter-fill" id="meter-fill"></div>
-                    <div class="meter-threshold threshold-a"></div>
-                    <div class="meter-threshold threshold-b"></div>
-                  </div>
-                  <div class="meter-scale"><span>0</span><span>64K</span><span>128K</span></div>
                 </div>
               </div>
             </div>
@@ -90,18 +90,18 @@
             </div>
 
             <div class="hud-right">
-              <dl class="stats-grid">
-                <div><dt>Turns</dt><dd id="turn-count">00</dd></div>
-                <div><dt>Pressure</dt><dd id="pressure-readout">0%</dd></div>
-                <div><dt>Recall</dt><dd id="recall-readout">100%</dd></div>
-                <div><dt>Vibes</dt><dd id="vibes-readout">Stable</dd></div>
-              </dl>
+              <div class="model-panel">
+                <span class="model-header">Active Model</span>
+                <strong id="model-readout">Fable 9000</strong>
+              </div>
 
-              <dl class="survival-grid">
-                <div><dt>Patience</dt><dd id="patience-readout">100</dd></div>
-                <div><dt>Tabs</dt><dd id="tabs-readout">03</dd></div>
-                <div><dt>Copium</dt><dd id="copium-readout">99</dd></div>
-                <div><dt>TODO</dt><dd id="todo-readout">01</dd></div>
+              <dl class="metrics-grid">
+                <div><dt>Turns</dt><dd id="turn-count">00</dd></div>
+                <div><dt>Confidence</dt><dd id="confidence-readout">98%</dd></div>
+                <div><dt>Effort</dt><dd id="effort-readout">ULTRACODE</dd></div>
+                <div><dt>API Cost</dt><dd id="cost-readout">$0.00</dd></div>
+                <div><dt>Approvals</dt><dd id="approvals-readout">ON</dd></div>
+                <div><dt>Workers</dt><dd id="workers-readout">01</dd></div>
               </dl>
             </div>
           </aside>
@@ -115,7 +115,7 @@
         </div>
         <div class="controls">
           <button id="play-button" type="button"><span class="button-icon">Ⅱ</span><span class="button-copy">Pause</span></button>
-          <button id="advance-button" type="button">Add context <span>+16K</span></button>
+          <button id="advance-button" type="button">Escalate scope <span>+128K</span></button>
         </div>
       </div>
     </main>

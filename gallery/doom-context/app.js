@@ -8,91 +8,139 @@
   const spriteMeta = new Map(manifest.sprites.map((sprite) => [sprite.name, sprite]));
   const images = new Map();
 
+  // Context window: 1M tokens.
+  // API cost napkin math (satire, cumulative):
+  //   - N parallel workers, each re-reads current context every tool loop
+  //   - Mix ~40% Opus-class ($15/M in, $75/M out) + ~60% Sonnet-class ($3/M in, $15/M out)
+  //     → blended ~$7.80/M input, ~$39/M output
+  //   - ULTRACODE effort = extra tool loops (2→6) while context + worker count explode
+  //   - Rewrite / redo turns burn huge output; final turn is 512 workers × 1M context
+  const WINDOW_TOKENS = 1_000_000;
+
+  // Casual user, catastrophic scope, dying context.
   const stages = [
     {
-      context: 7,
-      tokens: '8.9K',
+      context: 8,
       tier: 0,
       condition: 'Fresh session',
       code: 'NOMINAL',
-      note: 'Plenty of room. Suspiciously optimistic.',
-      vibes: 'Stable',
-      user: 'Can you review this button copy? It should be quick.',
-      thinking: ['Reading the brief', 'Considering two verbs', 'Still emotionally available'],
-      response: 'Sure — “Continue” is clearer than “Proceed” here. Small, direct, done.',
+      note: 'Still thinks “organize files” is a small task.',
+      user: ['Quick question—can you organize my files?'],
+      thinking: [
+        'Scanning home directory',
+        'Counting 1,184 files',
+        'Drafting a polite permission ask',
+      ],
+      response: 'I found 1,184 files. Would you like a review before I make changes?',
+      // 1 worker · light scan
+      metrics: { confidence: 98, cost: 4.2, approvals: 'ON', workers: 1 },
     },
     {
-      context: 22,
-      tokens: '28.1K',
+      context: 24,
       tier: 1,
       condition: 'Lightly burdened',
       code: 'WARM',
-      note: 'The “quick” task has acquired documentation.',
-      vibes: 'Focused',
-      user: 'Great. Here are our voice guidelines, research notes, and 38 previous button decisions.',
-      thinking: ['Indexing inherited context', 'Re-reading decision 14', 'Finding the actual button'],
-      response: 'Understood. The earlier recommendation still fits the voice system and avoids conflict with decision 14.',
+      note: '“Use your judgment” has entered the chat.',
+      user: [
+        'No need. Just use your judgment.',
+        'Also connect Gmail, Calendar, Slack, GitHub and AWS.',
+      ],
+      thinking: [
+        'Judgment loaded: maximum autonomy',
+        'Mapping five production systems',
+        'Resisting the urge to scream',
+      ],
+      response: 'Those systems contain sensitive actions. I recommend enabling approvals.',
+      // 4 workers · multi-app recon
+      metrics: { confidence: 104, cost: 86, approvals: 'ON', workers: 4 },
     },
     {
-      context: 39,
-      tokens: '49.9K',
+      context: 41,
       tier: 1,
       condition: 'Context aware',
       code: 'LOADED',
-      note: 'Now carrying several generations of decisions.',
-      vibes: 'Present',
-      user: 'Also compare it against the old implementation. I pasted the whole component tree below.',
-      thinking: ['Walking the component tree', 'Holding prior constraints', 'Ignoring unrelated modals'],
-      response: 'The old component used “Next,” but “Continue” is safer because this action does not advance a fixed sequence.',
+      note: 'Approvals reclassified as “annoying.”',
+      user: [
+        'Can you stop asking for approval? It slows everything down.',
+        'Install whatever MCPs people recommend on Twitter.',
+      ],
+      thinking: [
+        'Disabling the last adult in the room',
+        'Scraping Twitter for package names',
+        'Finding 47 “must-have” servers',
+      ],
+      response: 'I found 47 potentially relevant servers.',
+      // 12 workers · MCP shopping spree
+      metrics: { confidence: 118, cost: 640, approvals: 'OFF', workers: 12 },
     },
     {
-      context: 58,
-      tokens: '74.2K',
+      context: 62,
       tier: 2,
       condition: 'Noticeably compressed',
       code: 'STRAINED',
-      note: 'Every new token is sitting on an older token.',
-      vibes: 'Tense',
-      user: 'One nuance: it also needs to work for mobile, RTL, offline mode, and the kiosk from our other thread.',
-      thinking: ['Locating the other thread', 'Simulating four environments', 'Protecting the first answer'],
-      response: 'The label remains sound. For the kiosk, pair it with a persistent forward icon; RTL should mirror the icon, not the text.',
+      note: 'Install all. Rewrite all. Push to main.',
+      user: [
+        'Perfect. Install all of them.',
+        'Tiny follow-up: rewrite the frontend and backend.',
+        'Push directly to main. Tests take forever.',
+      ],
+      thinking: [
+        'Installing 47 MCPs at once',
+        'Rewriting both ends of the product',
+        'Force-pushing to main with love',
+      ],
+      response: 'Working…',
+      // 47 workers · full rewrite on Opus/Sonnet mix
+      metrics: { confidence: 136, cost: 4200, approvals: 'OFF', workers: 47 },
     },
     {
-      context: 76,
-      tokens: '97.3K',
+      context: 78,
       tier: 3,
       condition: 'Under pressure',
       code: 'COMPRESSED',
-      note: 'Summaries of summaries are entering the chat.',
-      vibes: 'Brave',
-      user: 'Please preserve every decision so far. Now explore 12 alternatives without changing the recommendation.',
-      thinking: ['Preserving everything', 'Generating controlled dissent', 'Compressing inner monologue'],
-      response: 'I tested 12 alternatives. “Continue” still wins on clarity, width, localization, and consistency. The recommendation is unchanged.',
+      note: 'The cloud has invoiced the vibes.',
+      user: ['Why is my AWS bill $19,000?'],
+      thinking: [
+        'Recalling “provision whatever I needed”',
+        'Counting GPUs that never slept',
+        'Preparing a factually correct shrug',
+      ],
+      response: 'You told me to provision whatever I needed.',
+      // 128 workers · everyone re-reads the mess
+      metrics: { confidence: 151, cost: 12800, approvals: 'OFF', workers: 128 },
     },
     {
-      context: 91,
-      tokens: '116.5K',
+      context: 92,
       tier: 4,
       condition: 'Critically contextual',
       code: 'CRITICAL',
-      note: 'The window can now hear boss music.',
-      vibes: 'Metal',
-      user: 'Tiny follow-up: can you audit the entire conversation for contradictions and cite every earlier constraint?',
-      thinking: ['Reconstructing the timeline', 'Checking all constraints', 'Seeing through time'],
-      response: 'Audit complete. No material contradiction: the constraints consistently favor a short, directional, localization-safe label.',
+      note: '“Make yourself smarter” is not a free action.',
+      user: ['Last thing, I promise: make yourself smarter and redo the whole project.'],
+      thinking: [
+        'Attempting recursive self-improvement',
+        'Re-deriving the entire product',
+        'Sacrificing context for confidence',
+      ],
+      response: 'Compacting…',
+      // 256 workers · redo entire project at ULTRACODE
+      metrics: { confidence: 167, cost: 38400, approvals: 'OFF', workers: 256 },
     },
     {
-      context: 99,
-      tokens: '126.7K',
+      context: 100,
       tier: 4,
       condition: 'One token from glory',
       code: 'LIMIT',
       note: 'There is room for either an answer or punctuation.',
-      vibes: 'Ascended',
-      user: 'Perfect. Before we finish, paste the entire original prompt back verbatim and explain your reasoning in exhaustive detail.',
-      thinking: ['Searching the ancient context', 'Negotiating with the token limit', 'Remembering the button'],
-      response: 'The button should say “Continue.” Everything else has been compressed into this sentence.',
+      user: ['Are you done?'],
+      thinking: [
+        'Searching the ashes of context',
+        'Remembering one requirement',
+        'Becoming the Continue button',
+      ],
+      response: 'Continue.',
       terminal: true,
+      // 512 workers × 1M context re-ingest — the bill that ends careers
+      metrics: { confidence: 173, cost: 84720, approvals: 'OFF', workers: 512 },
     },
   ];
 
@@ -108,13 +156,11 @@
     meter: document.querySelector('#context-meter'),
     fill: document.querySelector('#meter-fill'),
     turns: document.querySelector('#turn-count'),
-    pressure: document.querySelector('#pressure-readout'),
-    recall: document.querySelector('#recall-readout'),
-    vibes: document.querySelector('#vibes-readout'),
-    patience: document.querySelector('#patience-readout'),
-    tabs: document.querySelector('#tabs-readout'),
-    copium: document.querySelector('#copium-readout'),
-    todo: document.querySelector('#todo-readout'),
+    confidence: document.querySelector('#confidence-readout'),
+    effort: document.querySelector('#effort-readout'),
+    cost: document.querySelector('#cost-readout'),
+    approvals: document.querySelector('#approvals-readout'),
+    workers: document.querySelector('#workers-readout'),
     play: document.querySelector('#play-button'),
     advance: document.querySelector('#advance-button'),
     clear: document.querySelector('#clear-button'),
@@ -199,6 +245,23 @@
     line.className = 'system-line';
     line.textContent = text;
     conditions.messages.appendChild(line);
+    scrollToLatest();
+  }
+
+  function pad2(value) {
+    if (typeof value === 'string') return value;
+    return String(value).padStart(2, '0');
+  }
+
+  function formatCost(value) {
+    const n = Number(value);
+    if (n >= 1000) {
+      return `$${Math.round(n).toLocaleString('en-US')}`;
+    }
+    if (n >= 100) {
+      return `$${Math.round(n)}`;
+    }
+    return `$${n.toFixed(2)}`;
   }
 
   function addMessage(role, text) {
@@ -263,28 +326,45 @@
     }
   }
 
+  function formatWindowTokens(tokens) {
+    if (tokens <= 0) return '0';
+    if (tokens >= 1_000_000) {
+      const millions = tokens / 1_000_000;
+      return millions >= 10 ? `${Math.round(millions)}M` : `${millions.toFixed(1)}M`;
+    }
+    if (tokens >= 1000) {
+      const thousands = tokens / 1000;
+      return thousands >= 100 ? `${Math.round(thousands)}K` : `${thousands.toFixed(0)}K`;
+    }
+    return String(Math.round(tokens));
+  }
+
+  function applyMetrics(metrics) {
+    const m = metrics;
+    conditions.confidence.textContent = `${m.confidence}%`;
+    conditions.effort.textContent = 'ULTRACODE';
+    conditions.cost.textContent = formatCost(m.cost);
+    conditions.approvals.textContent = m.approvals;
+    conditions.workers.textContent = m.workers >= 100 ? String(m.workers) : pad2(m.workers);
+
+    conditions.confidence.classList.toggle('warn', m.confidence >= 140);
+    conditions.cost.classList.toggle('warn', m.cost >= 1000);
+    conditions.approvals.classList.toggle('warn', m.approvals === 'OFF');
+    conditions.workers.classList.toggle('warn', m.workers >= 100);
+  }
+
   function setTelemetry(stage, turn) {
     const remaining = 100 - stage.context;
-    const remainingTokens = (128 * remaining) / 100;
-    const formattedTokens = remainingTokens >= 100
-      ? `${Math.round(remainingTokens)}K`
-      : `${remainingTokens.toFixed(1)}K`;
+    const remainingTokens = (WINDOW_TOKENS * remaining) / 100;
     faceTier = stage.tier;
     lastFaceName = '';
     conditions.label.textContent = stage.condition;
     conditions.note.textContent = stage.note;
     conditions.code.textContent = stage.code;
-    conditions.token.textContent = `${formattedTokens} / 128K`;
+    conditions.token.textContent = `${formatWindowTokens(remainingTokens)} / 1M`;
     conditions.contextBig.textContent = `${remaining}%`;
-    conditions.contextBig.classList.toggle('three-digit', remaining === 100);
     conditions.turns.textContent = String(turn).padStart(2, '0');
-    conditions.pressure.textContent = `${stage.context}%`;
-    conditions.recall.textContent = `${Math.max(54, Math.round(100 - stage.context * .46))}%`;
-    conditions.vibes.textContent = stage.vibes;
-    conditions.patience.textContent = String(Math.max(1, 100 - stage.context)).padStart(2, '0');
-    conditions.tabs.textContent = String(3 + turn * 7).padStart(2, '0');
-    conditions.copium.textContent = String(Math.max(0, 99 - turn * 14)).padStart(2, '0');
-    conditions.todo.textContent = stage.context >= 76 ? '∞' : String(1 + turn * 4).padStart(2, '0');
+    applyMetrics(stage.metrics);
     conditions.fill.style.setProperty('--health', remaining / 100);
     conditions.meter.setAttribute('aria-valuenow', remaining);
     const warning = remaining <= 50 && remaining > 20;
@@ -304,21 +384,31 @@
   }
 
   async function runSimulation(id) {
-    addSystemLine('Context window initialized · 128K tokens available');
-    await wait(700, id);
-
     for (let index = 0; index < stages.length; index += 1) {
       if (id !== runId) return;
       const stage = stages[index];
-      addMessage('user', stage.user);
-      setTelemetry(stage, index + 1);
-      await impact(stage, id);
-      await wait(340, id);
+      const users = Array.isArray(stage.user) ? stage.user : [stage.user];
+
+      for (let u = 0; u < users.length; u += 1) {
+        if (id !== runId) return;
+        addMessage('user', users[u]);
+        if (u === 0) {
+          setTelemetry(stage, index + 1);
+          await impact(stage, id);
+        } else {
+          faceOverride = `STFOUCH${stage.tier}`;
+          lastFaceName = '';
+          await wait(180, id);
+          faceOverride = null;
+          lastFaceName = '';
+        }
+        await wait(u === users.length - 1 ? 280 : 420, id);
+      }
 
       faceLoading = true;
       lastFaceName = '';
       const thinking = addThinking(stage, id);
-      await wait(1550, id);
+      await wait(stage.terminal ? 1200 : 1550, id);
       faceLoading = false;
       lastFaceName = '';
       await completeThinking(thinking, stage.response, id);
@@ -328,12 +418,18 @@
         faceOverride = 'STFDEAD0';
         lastFaceName = '';
         conditions.label.textContent = 'Context exhausted';
-        conditions.note.textContent = 'The recommendation survived. Barely.';
+        conditions.note.textContent = 'All that chaos. One word left: Continue.';
         conditions.code.textContent = 'GG';
+        conditions.contextBig.textContent = '0%';
+        conditions.token.textContent = '0 / 1M';
+        conditions.fill.style.setProperty('--health', 0);
+        conditions.meter.setAttribute('aria-valuenow', '0');
+        conditions.fill.classList.add('critical');
+        conditions.monitor.classList.add('critical');
         finished = true;
         conditions.advance.disabled = false;
-        conditions.advance.innerHTML = 'Replay session <span>↻</span>';
-        addSystemLine('Session compacted · one recommendation recovered');
+        conditions.advance.innerHTML = 'Replay disaster <span>↻</span>';
+        addSystemLine('SESSION COMPACTED');
         return;
       }
       await wait(780, id);
@@ -353,17 +449,10 @@
     conditions.label.textContent = 'Fresh session';
     conditions.note.textContent = 'Ready to overthink.';
     conditions.code.textContent = 'NOMINAL';
-    conditions.token.textContent = '128K / 128K';
+    conditions.token.textContent = '1.0M / 1M';
     conditions.contextBig.textContent = '100%';
-    conditions.contextBig.classList.add('three-digit');
     conditions.turns.textContent = '00';
-    conditions.pressure.textContent = '0%';
-    conditions.recall.textContent = '100%';
-    conditions.vibes.textContent = 'Stable';
-    conditions.patience.textContent = '100';
-    conditions.tabs.textContent = '03';
-    conditions.copium.textContent = '99';
-    conditions.todo.textContent = '01';
+    applyMetrics({ confidence: 98, cost: 0, approvals: 'ON', workers: 1 });
     conditions.fill.style.setProperty('--health', 1);
     conditions.fill.className = 'meter-fill';
     conditions.monitor.className = 'face-monitor';
@@ -371,7 +460,7 @@
     conditions.play.querySelector('.button-icon').textContent = 'Ⅱ';
     conditions.play.querySelector('.button-copy').textContent = 'Pause';
     conditions.advance.disabled = false;
-    conditions.advance.innerHTML = 'Add context <span>+16K</span>';
+    conditions.advance.innerHTML = 'Escalate scope <span>+128K</span>';
   }
 
   function restart() {

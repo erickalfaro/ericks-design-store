@@ -4,9 +4,10 @@
 states. It works when opened directly from disk: no build step, server, web font, CDN, or package
 install is required.
 
-The companion `gallery/doom-context.html` is a satirical animated chat visualization. It stages a
-seven-turn conversation, fills a fake 128K context meter, and uses the progressively bloodier face
-tiers as both agent telemetry and the per-turn loading animation.
+The companion `gallery/doom-context.html` (**Agent Doom — Context Exhausted**) is a satirical
+animated chat visualization. It stages a seven-turn “quick question” disaster: casual user asks,
+scope creeps into Gmail/AWS/MCPs/main, a fake 128K context meter drains, and the progressively
+bloodier face tiers act as both agent telemetry and the per-turn loading animation.
 
 ## Open the viewer
 
